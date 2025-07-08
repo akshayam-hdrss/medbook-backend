@@ -104,3 +104,86 @@
 
 ---
 
+# Doctor API Documentation
+
+## Base Route
+`/api/doctor`
+
+---
+
+### ✅ Get All Doctors (Filtered)
+**GET** `/api/doctor?doctorTypeId=&hospitalId=`
+
+Returns:
+- doctorId
+- doctorName
+- imageUrl
+- businessName
+- location
+- phone
+- whatsapp
+- rating
+
+---
+
+### ✅ Get Doctor By ID
+**GET** `/api/doctor/:id`
+
+Returns full details of the doctor.
+
+---
+
+### ✅ Add New Doctor
+**POST** `/api/doctor`
+
+Body:
+```json
+{
+  "doctorName": "Dr. Smith",
+  "imageUrl": "https://...",
+  "businessName": "ABC Clinic",
+  "location": "Dubai",
+  "phone": "+971-123456",
+  "whatsapp": "+971-654321",
+  "rating": 4.8,
+  "experience": "10 years",
+  "addressLine1": "Street 1",
+  "addressLine2": "Near Hospital",
+  "mapLink": "https://maps.google.com/...",
+  "about": "About doctor...",
+  "gallery": ["https://img1", "https://img2"],
+  "youtubeLink": "https://youtube.com/...",
+  "doctorTypeId": 1,
+  "hospitalId": 1
+}
+```
+
+---
+
+### ✅ Update Doctor
+**PUT** `/api/doctor/:id`
+
+Body: Same as above.
+
+---
+
+### ✅ Delete Doctor
+**DELETE** `/api/doctor/:id`
+
+---
+
+### ✅ Add Review
+**POST** `/api/doctor/:id/review`
+
+Body:
+```json
+{
+  "comment": "Very professional",
+  "rating": 5
+}
+```
+
+---
+
+### ✅ Get Reviews
+**GET** `/api/doctor/:id/reviews`
