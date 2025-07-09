@@ -10,7 +10,7 @@ const connectDB = async () => {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
-      ca: fs.readFileSync(process.env.DB_SSL_CA)
+      ca: process.env.DB_SSL_CA_PEM.replace(/\\n/g, '\n')
     }
   });
 
@@ -87,6 +87,6 @@ const connectDB = async () => {
 
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;
-};
+}; 
 
 module.exports = connectDB;
