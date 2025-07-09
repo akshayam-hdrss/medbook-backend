@@ -3,6 +3,12 @@ const fs = require('fs');
 require('dotenv').config();
 
 const connectDB = async () => {
+  const ca = process.env.DB_SSL_CA;
+
+  if (!ca) {
+    console.error("❌ DB_SSL_CA is not defined in environment variables");
+    process.exit(1); // or throw new Error
+  }
   const db = await mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -10,7 +16,7 @@ const connectDB = async () => {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
-      ca: process.env.DB_SSL_CA_PEM.replace(/\\n/g, '\n')
+      ca: process.env.DB_SSL_CA.replace(/\\n/g, '\n')
     }
   });
 
