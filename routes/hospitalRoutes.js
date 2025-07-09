@@ -8,6 +8,7 @@ const {
   addHospital,
   updateHospital,
   deleteHospital,
+  getHospitalsByType,
 } = require('../controllers/hospitalController');
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.put('/hospitalType/:id', updateHospitalType);
 router.delete('/hospitalType/:id', deleteHospitalType);
 
 router.get('/hospital', getAllHospitals);
+router.get('/hospital/:hospitalTypeId', getHospitalsByType);
 router.post('/hospital', addHospital);
 router.put('/hospital/:id', updateHospital);
 router.delete('/hospital/:id', deleteHospital);

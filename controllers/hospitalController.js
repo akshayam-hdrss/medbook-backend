@@ -77,6 +77,30 @@ exports.getAllHospitals = async (req, res) => {
   }
 };
 
+exports.getHospitalsByType = async (req, res) => {
+  try {
+    const { hospitalTypeId } = req.params;
+    const [rows] = await db.query(
+      'SELECT * FROM hospital WHERE hospitalTypeId = ?',
+      [hospitalTypeId]
+    );
+
+    const hospitals = rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      imageUrl: row.imageUrl || "",
+      area: row.area || "",
+      mapLink: row.mapLink || "",
+      phone: row.phone || "",
+      hospitalTypeId: row.hospitalTypeId
+    }));
+
+    res.json({ result: "Success", resultData: hospitals });
+  } catch (error) {
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
+
 exports.addHospital = async (req, res) => {
   try {
     const { name, imageUrl, area, mapLink, phone, hospitalTypeId } = req.body;
