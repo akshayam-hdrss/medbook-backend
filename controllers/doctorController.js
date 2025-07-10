@@ -25,7 +25,7 @@ exports.getAllDoctors = async (req, res) => {
     query += " GROUP BY d.id";
 
     const [rows] = await db.query(query, params);
-    const doctors = rows.map(row => ({
+    const doctors = rows.map((row) => ({
       id: row.id,
       doctorName: row.doctorName,
       imageUrl: row.imageUrl || "",
@@ -34,7 +34,7 @@ exports.getAllDoctors = async (req, res) => {
       phone: row.phone || "",
       whatsapp: row.whatsapp || "",
       // rating: parseFloat(row.rating.toFixed(1))
-      rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0"
+      rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0",
     }));
 
     res.json({ result: "Success", resultData: doctors });
@@ -42,7 +42,6 @@ exports.getAllDoctors = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
-
 
 // Get full doctor details
 // ✅ Get full doctor details with average rating
@@ -53,7 +52,9 @@ exports.getDoctorById = async (req, res) => {
     // Fetch doctor details
     const [rows] = await db.query("SELECT * FROM doctor WHERE id = ?", [id]);
     if (rows.length === 0) {
-      return res.status(404).json({ result: "Failed", message: "Doctor not found" });
+      return res
+        .status(404)
+        .json({ result: "Failed", message: "Doctor not found" });
     }
 
     const doctor = rows[0];
@@ -64,7 +65,9 @@ exports.getDoctorById = async (req, res) => {
       [id]
     );
     const avgRatingRaw = ratingRows[0].avgRating;
-    const avgRating = avgRatingRaw ? Math.round(parseFloat(avgRatingRaw) * 10) / 10 : 0;
+    const avgRating = avgRatingRaw
+      ? Math.round(parseFloat(avgRatingRaw) * 10) / 10
+      : 0;
 
     doctor.imageUrl = doctor.imageUrl || "";
     doctor.businessName = doctor.businessName || "";
@@ -77,14 +80,15 @@ exports.getDoctorById = async (req, res) => {
     doctor.addressLine2 = doctor.addressLine2 || "";
     doctor.mapLink = doctor.mapLink || "";
     doctor.about = doctor.about || "";
+    doctor.bannerUrl = doctor.bannerUrl || "";
     try {
-  doctor.gallery = JSON.parse(doctor.gallery);
-  if (!Array.isArray(doctor.gallery)) {
-    doctor.gallery = [doctor.gallery]; // if a single string, wrap it in an array
-  }
-} catch (e) {
-  doctor.gallery = doctor.gallery ? [doctor.gallery] : [];
-}
+      doctor.gallery = JSON.parse(doctor.gallery);
+      if (!Array.isArray(doctor.gallery)) {
+        doctor.gallery = [doctor.gallery]; // if a single string, wrap it in an array
+      }
+    } catch (e) {
+      doctor.gallery = doctor.gallery ? [doctor.gallery] : [];
+    }
     doctor.youtubeLink = doctor.youtubeLink || "";
 
     res.json({ result: "Success", resultData: doctor });
@@ -93,29 +97,61 @@ exports.getDoctorById = async (req, res) => {
   }
 };
 
-
 // Add a new doctor
 exports.addDoctor = async (req, res) => {
   try {
     const {
-      doctorName, imageUrl, businessName, location, phone, whatsapp,
-      rating, experience, addressLine1, addressLine2, mapLink, about,
-      gallery, youtubeLink, doctorTypeId, hospitalId
+      doctorName,
+      imageUrl,
+      businessName,
+      location,
+      phone,
+      whatsapp,
+      rating,
+      experience,
+      addressLine1,
+      addressLine2,
+      mapLink,
+      about,
+      youtubeLink,
+      gallery,
+      doctorTypeId,
+      hospitalId,
+      bannerUrl,
     } = req.body;
 
     const [result] = await db.query(
-      `INSERT INTO doctor (doctorName, imageUrl, businessName, location, phone, whatsapp,
-        rating, experience, addressLine1, addressLine2, mapLink, about,
-        gallery, youtubeLink, doctorTypeId, hospitalId)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
+      `INSERT INTO doctor (
         doctorName, imageUrl, businessName, location, phone, whatsapp,
         rating, experience, addressLine1, addressLine2, mapLink, about,
-        JSON.stringify(gallery || []), youtubeLink, doctorTypeId, hospitalId
+        youtubeLink, gallery, doctorTypeId, hospitalId, bannerUrl
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        doctorName,
+        imageUrl,
+        businessName,
+        location,
+        phone,
+        whatsapp,
+        rating,
+        experience,
+        addressLine1,
+        addressLine2,
+        mapLink,
+        about,
+        youtubeLink,
+        JSON.stringify(gallery || []),
+        doctorTypeId,
+        hospitalId,
+        bannerUrl,
       ]
     );
 
-    res.json({ result: "Success", message: "Doctor added", resultData: { id: result.insertId } });
+    res.json({
+      result: "Success",
+      message: "Doctor added",
+      resultData: { id: result.insertId },
+    });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
@@ -126,19 +162,48 @@ exports.updateDoctor = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      doctorName, imageUrl, businessName, location, phone, whatsapp,
-      rating, experience, addressLine1, addressLine2, mapLink, about,
-      gallery, youtubeLink, doctorTypeId, hospitalId
+      doctorName,
+      imageUrl,
+      businessName,
+      location,
+      phone,
+      whatsapp,
+      rating,
+      experience,
+      addressLine1,
+      addressLine2,
+      mapLink,
+      about,
+      gallery,
+      youtubeLink,
+      doctorTypeId,
+      hospitalId,
+      bannerUrl,
     } = req.body;
 
     await db.query(
       `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, location=?, phone=?, whatsapp=?,
         rating=?, experience=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
-        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=? WHERE id=?`,
+        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, bannerUrl=? WHERE id=?`,
       [
-        doctorName, imageUrl, businessName, location, phone, whatsapp,
-        rating, experience, addressLine1, addressLine2, mapLink, about,
-        JSON.stringify(gallery || []), youtubeLink, doctorTypeId, hospitalId, id
+        doctorName,
+        imageUrl,
+        businessName,
+        location,
+        phone,
+        whatsapp,
+        rating,
+        experience,
+        addressLine1,
+        addressLine2,
+        mapLink,
+        about,
+        JSON.stringify(gallery || []),
+        youtubeLink,
+        doctorTypeId,
+        hospitalId,
+        bannerUrl,
+        id,
       ]
     );
 
@@ -170,7 +235,11 @@ exports.addReview = async (req, res) => {
       [doctorId, comment, rating]
     );
 
-    res.json({ result: "Success", message: "Review added", resultData: { id: result.insertId } });
+    res.json({
+      result: "Success",
+      message: "Review added",
+      resultData: { id: result.insertId },
+    });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
@@ -180,7 +249,10 @@ exports.addReview = async (req, res) => {
 exports.getReviews = async (req, res) => {
   try {
     const { id: doctorId } = req.params;
-    const [rows] = await db.query("SELECT comment, rating FROM doctorReview WHERE doctorId = ?", [doctorId]);
+    const [rows] = await db.query(
+      "SELECT comment, rating FROM doctorReview WHERE doctorId = ?",
+      [doctorId]
+    );
     res.json({ result: "Success", resultData: rows });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });

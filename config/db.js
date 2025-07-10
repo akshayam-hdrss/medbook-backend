@@ -75,7 +75,7 @@ const connectDB = async () => {
       gallery JSON,
       doctorTypeId INT,
       hospitalId INT,
-
+      bannerUrl TEXT,
       FOREIGN KEY (doctorTypeId) REFERENCES doctorType(id),
       FOREIGN KEY (hospitalId) REFERENCES hospital(id)
     );
