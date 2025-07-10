@@ -33,7 +33,8 @@ exports.getAllDoctors = async (req, res) => {
       location: row.location || "",
       phone: row.phone || "",
       whatsapp: row.whatsapp || "",
-      rating: parseFloat(row.rating.toFixed(1))
+      // rating: parseFloat(row.rating.toFixed(1))
+      rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0"
     }));
 
     res.json({ result: "Success", resultData: doctors });
@@ -62,20 +63,28 @@ exports.getDoctorById = async (req, res) => {
       "SELECT IFNULL(AVG(rating), 0) as avgRating FROM doctorReview WHERE doctorId = ?",
       [id]
     );
-    const avgRating = parseFloat(ratingRows[0].avgRating.toFixed(1));
+    const avgRatingRaw = ratingRows[0].avgRating;
+    const avgRating = avgRatingRaw ? Math.round(parseFloat(avgRatingRaw) * 10) / 10 : 0;
 
     doctor.imageUrl = doctor.imageUrl || "";
     doctor.businessName = doctor.businessName || "";
     doctor.location = doctor.location || "";
     doctor.phone = doctor.phone || "";
     doctor.whatsapp = doctor.whatsapp || "";
-    doctor.rating = avgRating;
+    doctor.rating = avgRating || 0;
     doctor.experience = doctor.experience || "";
     doctor.addressLine1 = doctor.addressLine1 || "";
     doctor.addressLine2 = doctor.addressLine2 || "";
     doctor.mapLink = doctor.mapLink || "";
     doctor.about = doctor.about || "";
-    doctor.gallery = doctor.gallery ? JSON.parse(doctor.gallery) : [];
+    try {
+  doctor.gallery = JSON.parse(doctor.gallery);
+  if (!Array.isArray(doctor.gallery)) {
+    doctor.gallery = [doctor.gallery]; // if a single string, wrap it in an array
+  }
+} catch (e) {
+  doctor.gallery = doctor.gallery ? [doctor.gallery] : [];
+}
     doctor.youtubeLink = doctor.youtubeLink || "";
 
     res.json({ result: "Success", resultData: doctor });
