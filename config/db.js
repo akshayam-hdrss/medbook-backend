@@ -91,6 +91,85 @@ const connectDB = async () => {
     );
   `);
 
+  // Create availableService table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS availableService (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT
+  )
+`);
+
+// Create serviceType table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS serviceType (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    availableServiceId INT,
+    FOREIGN KEY (availableServiceId) REFERENCES availableService(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  )
+`);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS service (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    serviceName VARCHAR(255),
+    imageUrl TEXT,
+    businessName VARCHAR(255),
+    location VARCHAR(255),
+    phone VARCHAR(20),
+    whatsapp VARCHAR(20),
+    experience VARCHAR(50),
+    addressLine1 TEXT,
+    addressLine2 TEXT,
+    mapLink TEXT,
+    about TEXT,
+    youtubeLink TEXT,
+    gallery JSON,
+    bannerUrl TEXT,
+    serviceTypeId INT,
+    FOREIGN KEY (serviceTypeId) REFERENCES serviceType(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  )
+`);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS serviceReview (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    serviceId INT,
+    rating DECIMAL(2,1),
+    comment TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (serviceId) REFERENCES service(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  )
+`);
+
+// Create availableProduct table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS availableProduct (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT
+  )
+`);
+
+// Create productType table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS productType (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    availableProductId INT,
+    FOREIGN KEY (availableProductId) REFERENCES availableProduct(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  )
+`);
+
+
+
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;
 }; 

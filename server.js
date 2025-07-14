@@ -21,6 +21,8 @@ app.use(express.json());
     const uploadRoutes = require('./routes/uploadRoutes');
     const doctorTypeRoutes = require('./routes/doctorTypeRoutes');
     const doctorRoutes = require('./routes/doctorRoutes');
+    const serviceRoutes = require('./routes/serviceRoutes');
+    const productRoutes = require('./routes/productRoutes');
 
 
     // Mount routes
@@ -28,6 +30,10 @@ app.use(express.json());
     app.use('/api', hospitalRoutes);
     app.use('/api/doctorType', doctorTypeRoutes);
     app.use('/api/doctor', doctorRoutes);
+    app.use('/api/services', serviceRoutes);
+    app.use('/api/product', productRoutes);
+
+
     
     app.listen(port, () => {
       console.log(`🚀 Server running at port ${port}`);
