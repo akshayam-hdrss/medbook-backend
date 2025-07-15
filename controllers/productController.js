@@ -159,7 +159,15 @@ exports.getProductsByProductTypeId = async (req, res) => {
       mapLink: row.mapLink || "",
       about: row.about || "",
       youtubeLink: row.youtubeLink || "",
-      gallery: row.gallery ? JSON.parse(row.gallery) : [],
+      gallery: (() => {
+  try {
+    return row.gallery ? JSON.parse(row.gallery) : [];
+  } catch {
+    return [];
+  }
+})(),
+
+    //   gallery: row.gallery ? JSON.parse(row.gallery) : [],
       bannerUrl: row.bannerUrl || "",
       productTypeId: row.productTypeId
     }));
@@ -196,7 +204,15 @@ exports.getProductById = async (req, res) => {
       mapLink: row.mapLink || "",
       about: row.about || "",
       youtubeLink: row.youtubeLink || "",
-      gallery: row.gallery ? JSON.parse(row.gallery) : [],
+      gallery: (() => {
+  try {
+    return row.gallery ? JSON.parse(row.gallery) : [];
+  } catch {
+    return [];
+  }
+})(),
+
+    //   gallery: row.gallery ? JSON.parse(row.gallery) : [],
       bannerUrl: row.bannerUrl || "",
       productTypeId: row.productTypeId
     };
