@@ -4,28 +4,33 @@ const db = global.db;
 exports.getAllDoctors = async (req, res) => {
   try {
     const { doctorTypeId, hospitalId } = req.query;
-    let query = `
+
+    // Build doctor query
+    let doctorQuery = `
       SELECT d.id, d.doctorName, d.imageUrl, d.businessName, d.location, d.phone, d.whatsapp,
              IFNULL(AVG(r.rating), 0) as rating
       FROM doctor d
       LEFT JOIN doctorReview r ON d.id = r.doctorId
       WHERE 1=1
     `;
-    const params = [];
+    const doctorParams = [];
 
     if (doctorTypeId) {
-      query += " AND d.doctorTypeId = ?";
-      params.push(doctorTypeId);
+      doctorQuery += " AND d.doctorTypeId = ?";
+      doctorParams.push(doctorTypeId);
     }
+
     if (hospitalId) {
-      query += " AND d.hospitalId = ?";
-      params.push(hospitalId);
+      doctorQuery += " AND d.hospitalId = ?";
+      doctorParams.push(hospitalId);
     }
 
-    query += " GROUP BY d.id";
+    doctorQuery += " GROUP BY d.id";
 
-    const [rows] = await db.query(query, params);
-    const doctors = rows.map((row) => ({
+    // Execute doctor query
+    const [doctorRows] = await db.query(doctorQuery, doctorParams);
+
+    const doctors = doctorRows.map((row) => ({
       id: row.id,
       doctorName: row.doctorName,
       imageUrl: row.imageUrl || "",
@@ -33,12 +38,30 @@ exports.getAllDoctors = async (req, res) => {
       location: row.location || "",
       phone: row.phone || "",
       whatsapp: row.whatsapp || "",
-      // rating: parseFloat(row.rating.toFixed(1))
       rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0",
     }));
 
-    res.json({ result: "Success", resultData: doctors });
+    // Get categories linked to hospitalId
+    let categories = [];
+    if (hospitalId) {
+      const [categoryRows] = await db.query(
+        "SELECT id, text FROM category WHERE hospitalId = ?",
+        [hospitalId]
+      );
+
+      categories = categoryRows.map((c) => ({
+        id: c.id,
+        text: c.text,
+      }));
+    }
+
+    res.json({
+      result: "Success",
+      resultData: doctors,
+      category: categories,
+    });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };

@@ -91,6 +91,16 @@ const connectDB = async () => {
     );
   `);
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS category (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      text VARCHAR(100) NOT NULL,
+      hospitalId INT NOT NULL,
+      FOREIGN KEY (hospitalId) REFERENCES hospital(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+    );
+  `);
+
   // Create availableService table
 await db.query(`
   CREATE TABLE IF NOT EXISTS availableService (
@@ -167,6 +177,32 @@ await db.query(`
       ON DELETE CASCADE ON UPDATE CASCADE
   )
 `);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS product (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    productName VARCHAR(255),
+    price VARCHAR(100),
+    imageUrl TEXT,
+    businessName VARCHAR(255),
+    location VARCHAR(255),
+    phone VARCHAR(20),
+    whatsapp VARCHAR(20),
+    experience VARCHAR(100),
+    rating DECIMAL(3,2),
+    addressLine1 TEXT,
+    addressLine2 TEXT,
+    mapLink TEXT,
+    about TEXT,
+    youtubeLink TEXT,
+    gallery JSON,
+    bannerUrl TEXT,
+    productTypeId INT,
+    FOREIGN KEY (productTypeId) REFERENCES productType(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  )
+`);
+
 
 
 

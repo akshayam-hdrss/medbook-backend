@@ -23,6 +23,7 @@ app.use(express.json());
     const doctorRoutes = require('./routes/doctorRoutes');
     const serviceRoutes = require('./routes/serviceRoutes');
     const productRoutes = require('./routes/productRoutes');
+    const categoryRoutes = require('./routes/categoryRoutes');
 
 
     // Mount routes
@@ -31,7 +32,8 @@ app.use(express.json());
     app.use('/api/doctorType', doctorTypeRoutes);
     app.use('/api/doctor', doctorRoutes);
     app.use('/api/services', serviceRoutes);
-    app.use('/api/product', productRoutes);
+    app.use('/api/products', productRoutes);
+    app.use('/api/category', categoryRoutes);
 
 
     

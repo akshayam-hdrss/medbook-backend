@@ -15,4 +15,11 @@ router.post('/productType', controller.addProductType);
 router.put('/productType/:id', controller.updateProductType);
 router.delete('/productType/:id', controller.deleteProductType);
 
+// Product routes
+router.post('/product', controller.addProduct);
+router.get('/product/byProductType/:productTypeId', controller.getProductsByProductTypeId);
+router.get('/product/:id', controller.getProductById);
+router.put('/product/:id', controller.updateProduct);
+router.delete('/product/:id', controller.deleteProduct);
+
 module.exports = router;
