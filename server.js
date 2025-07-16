@@ -27,6 +27,9 @@ app.use(express.json());
 
 
     // Mount routes
+    app.get('/', (req, res) => {
+  res.send('✅ API is live and running...');
+});
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api/doctorType', doctorTypeRoutes);
