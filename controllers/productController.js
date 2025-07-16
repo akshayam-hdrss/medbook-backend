@@ -161,13 +161,12 @@ exports.getProductsByProductTypeId = async (req, res) => {
       youtubeLink: row.youtubeLink || "",
       gallery: (() => {
   try {
+    
     return row.gallery ? JSON.parse(row.gallery) : [];
-  } catch {
+  } catch (err) {
     return [];
   }
 })(),
-
-    //   gallery: row.gallery ? JSON.parse(row.gallery) : [],
       bannerUrl: row.bannerUrl || "",
       productTypeId: row.productTypeId
     }));
@@ -206,7 +205,12 @@ exports.getProductById = async (req, res) => {
       youtubeLink: row.youtubeLink || "",
       gallery: (() => {
   try {
-    return row.gallery ? JSON.parse(row.gallery) : [];
+    if (!row.gallery) return [];
+    if (row.gallery.trim().startsWith('[')) {
+      return JSON.parse(row.gallery);
+    }
+    // Fallback to CSV split
+    return row.gallery.split(',').map(x => x.trim());
   } catch {
     return [];
   }

@@ -162,22 +162,51 @@ exports.getServiceById = async (req, res) => {
     if (rows.length === 0) {
       return res.status(404).json({ result: "Failed", message: "Service not found" });
     }
-    res.json({ result: "Success", resultData: rows[0] });
+
+    const row = rows[0];
+
+    res.json({
+      result: "Success",
+      resultData: {
+        ...row,
+        gallery: (() => {
+          try {
+            return row.gallery ? JSON.parse(row.gallery) : [];
+          } catch (err) {
+            return [];
+          }
+        })(),
+      },
+    });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
 
 // 📋 Get all services by serviceTypeId
 exports.getServicesByServiceTypeId = async (req, res) => {
   try {
     const { serviceTypeId } = req.params;
     const [rows] = await db.query('SELECT * FROM service WHERE serviceTypeId = ?', [serviceTypeId]);
-    res.json({ result: "Success", resultData: rows });
+
+    const parsedRows = rows.map((row) => ({
+      ...row,
+      gallery: (() => {
+        try {
+          return row.gallery ? JSON.parse(row.gallery) : [];
+        } catch (err) {
+          return [];
+        }
+      })(),
+    }));
+
+    res.json({ result: "Success", resultData: parsedRows });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
 
 // ❌ Delete service
 exports.deleteService = async (req, res) => {
