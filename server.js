@@ -24,12 +24,14 @@ app.use(express.json());
     const serviceRoutes = require('./routes/serviceRoutes');
     const productRoutes = require('./routes/productRoutes');
     const categoryRoutes = require('./routes/categoryRoutes');
+    const complaintRoutes = require('./routes/complaintRoutes');
+    const userRoutes = require('./routes/userRoutes');
 
 
     // Mount routes
     app.get('/', (req, res) => {
-  res.send('✅ API is live and running...');
-});
+      res.send('✅ API is live and running...');
+    });
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api/doctorType', doctorTypeRoutes);
@@ -37,6 +39,9 @@ app.use(express.json());
     app.use('/api/services', serviceRoutes);
     app.use('/api/products', productRoutes);
     app.use('/api/category', categoryRoutes);
+    app.use('/api/user', userRoutes);
+    app.use('/api', complaintRoutes);
+
 
 
     

@@ -203,6 +203,35 @@ await db.query(`
   )
 `);
 
+await db.query(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    phone VARCHAR(15),
+    pincode VARCHAR(10),
+    gender VARCHAR(10),
+    dob DATE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS complaints (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT,
+    subject VARCHAR(255),
+    description TEXT,
+    location VARCHAR(255),
+    gallery JSON,
+    status VARCHAR(50) DEFAULT 'Pending',
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+
+
 
 
 
