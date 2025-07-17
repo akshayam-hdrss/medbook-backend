@@ -230,6 +230,30 @@ await db.query(`
   )
 `);
 
+// Create blog table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS blog (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(100),
+    publishedDate DATE,
+    status ENUM('Draft', 'Published', 'Archived') DEFAULT 'Draft',
+    category VARCHAR(100),
+    featuredImage TEXT,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS gallery (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category VARCHAR(50),
+    typeId INT DEFAULT NULL,
+    itemId INT DEFAULT NULL,
+    imageUrl JSON
+  )
+`);
 
 
 

@@ -26,6 +26,8 @@ app.use(express.json());
     const categoryRoutes = require('./routes/categoryRoutes');
     const complaintRoutes = require('./routes/complaintRoutes');
     const userRoutes = require('./routes/userRoutes');
+    const blogRoutes = require('./routes/blogRoutes');
+    const adsRoutes = require('./routes/galleryRoutes');
 
 
     // Mount routes
@@ -41,6 +43,8 @@ app.use(express.json());
     app.use('/api/category', categoryRoutes);
     app.use('/api/user', userRoutes);
     app.use('/api', complaintRoutes);
+    app.use('/api', blogRoutes);
+    app.use('/api/ads', adsRoutes);
 
 
 
