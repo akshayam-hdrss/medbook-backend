@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const doctorController = require('../controllers/doctorController');
 
+router.get('/topdoctors', doctorController.getTopDoctors);
 // Doctor routes
 router.get('/', doctorController.getAllDoctors);
 router.get('/:id', doctorController.getDoctorById);

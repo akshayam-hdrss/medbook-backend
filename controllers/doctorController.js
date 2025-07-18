@@ -281,3 +281,43 @@ exports.getReviews = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
+exports.getTopDoctors = async (req, res) => {
+  console.log("🔍 Incoming request: getTopDoctors");
+
+  try {
+    const [rows] = await db.query(`
+      SELECT d.id, d.doctorName, d.imageUrl, d.businessName, d.location, d.phone, d.whatsapp,
+             COUNT(r.rating) AS ratingCount,
+             IFNULL(AVG(r.rating), 0) AS avgRating
+      FROM doctor d
+      LEFT JOIN doctorReview r ON d.id = r.doctorId
+      GROUP BY d.id
+      ORDER BY avgRating DESC, ratingCount DESC
+      LIMIT 10
+    `);
+
+    console.log("TopDoctors", rows);
+
+    const topDoctors = rows.map((row) => ({
+      id: row.id,
+      doctorName: row.doctorName,
+      imageUrl: row.imageUrl || "",
+      businessName: row.businessName || "",
+      location: row.location || "",
+      phone: row.phone || "",
+      whatsapp: row.whatsapp || "",
+      rating: parseFloat(row.avgRating).toFixed(1),
+      ratingCount: row.ratingCount,
+    }));
+
+    res.json({
+      result: "Success",
+      resultData: topDoctors,
+    });
+  } catch (error) {
+    console.error("Error in getTopDoctors:", error);
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
+
