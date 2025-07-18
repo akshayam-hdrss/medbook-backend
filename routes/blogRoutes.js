@@ -27,7 +27,7 @@ router.post('/blog', async (req, res) => {
 router.get('/blog', async (req, res) => {
   try {
     const [rows] = await global.db.query(`SELECT * FROM blog ORDER BY createdAt DESC`);
-    res.json({ result: "Success", data: rows });
+    res.json({ result: "Success", resultData: rows });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
@@ -40,7 +40,7 @@ router.get('/blog/:id', async (req, res) => {
     if (rows.length === 0)
       return res.status(404).json({ result: "Failed", message: "Blog not found" });
 
-    res.json({ result: "Success", data: rows[0] });
+    res.json({ result: "Success", resultData: rows[0] });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
