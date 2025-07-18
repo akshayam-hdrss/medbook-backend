@@ -283,7 +283,6 @@ exports.getReviews = async (req, res) => {
 };
 
 exports.getTopDoctors = async (req, res) => {
-  console.log("🔍 Incoming request: getTopDoctors");
 
   try {
     const [rows] = await db.query(`

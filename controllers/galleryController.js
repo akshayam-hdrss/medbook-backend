@@ -82,7 +82,7 @@ exports.getGallery = async (req, res) => {
         `SELECT * FROM gallery WHERE category = 'default' AND typeId IS NULL AND itemId IS NULL`
       );
     }
-    console.log(gallery);
+   
 
     const resultData = gallery.map((row) => ({
       ...row,
