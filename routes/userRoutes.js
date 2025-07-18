@@ -33,7 +33,7 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const [users] = await global.db.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (users.length === 0) return res.status(404).json({ message: 'User not found' });
+    if (users.length === 0) return res.status(404).json({ message: 'User do not exist' });
 
     const user = users[0];
     const valid = await bcrypt.compare(password, user.password);
