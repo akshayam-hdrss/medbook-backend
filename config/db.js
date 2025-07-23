@@ -218,7 +218,8 @@ await db.query(`
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     block VARCHAR(100),
     district VARCHAR(100),
-    state VARCHAR(100)
+    state VARCHAR(100),
+    address TEXT
   )
 `);
 
