@@ -14,7 +14,8 @@ router.post('/signup', async (req, res) => {
     dob,
     block,
     district,
-    state
+    state,
+    address
   } = req.body;
 
   try {
@@ -26,9 +27,9 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await global.db.query(
-      `INSERT INTO users (name, email, password, phone, pincode, gender, dob, block, district, state)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, email, hashedPassword, phone, pincode, gender, dob, block, district, state]
+      `INSERT INTO users (name, email, password, phone, pincode, gender, dob, block, district, state, address)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, email, hashedPassword, phone, pincode, gender, dob, block, district, state, address]
     );
 
     res.json({ message: 'User registered successfully', userId: result.insertId });
