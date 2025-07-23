@@ -77,3 +77,58 @@ exports.getUserComplaints = async (req, res) => {
     res.status(500).json({ message: 'Error fetching user complaints' });
   }
 };
+
+
+// PUT: Update complaint by ID (only by owner)
+exports.updateComplaint = async (req, res) => {
+  const userId = req.user.id;
+  const complaintId = req.params.id;
+  const { subject, description, location, gallery } = req.body;
+
+  try {
+    // Check ownership
+    const [existing] = await global.db.query(
+      `SELECT id FROM complaints WHERE id = ? AND userId = ?`,
+      [complaintId, userId]
+    );
+    if (existing.length === 0) {
+      return res.status(403).json({ message: 'Unauthorized or complaint not found' });
+    }
+
+    await global.db.query(
+      `UPDATE complaints
+       SET subject = ?, description = ?, location = ?, gallery = ?
+       WHERE id = ? AND userId = ?`,
+      [subject, description, location, JSON.stringify(gallery || []), complaintId, userId]
+    );
+
+    res.json({ message: 'Complaint updated successfully' });
+  } catch (err) {
+    console.error('❌ Error updating complaint:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// DELETE: Delete complaint by ID (only by owner)
+exports.deleteComplaint = async (req, res) => {
+  const userId = req.user.id;
+  const complaintId = req.params.id;
+
+  try {
+    // Check ownership
+    const [existing] = await global.db.query(
+      `SELECT id FROM complaints WHERE id = ? AND userId = ?`,
+      [complaintId, userId]
+    );
+    if (existing.length === 0) {
+      return res.status(403).json({ message: 'Unauthorized or complaint not found' });
+    }
+
+    await global.db.query(`DELETE FROM complaints WHERE id = ? AND userId = ?`, [complaintId, userId]);
+
+    res.json({ message: 'Complaint deleted successfully' });
+  } catch (err) {
+    console.error('❌ Error deleting complaint:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
