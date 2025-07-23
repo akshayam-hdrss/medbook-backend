@@ -68,10 +68,11 @@ router.post('/login', async (req, res) => {
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const [rows] = await global.db.query(
-      `SELECT id, name, email, phone, pincode, gender, dob, createdAt
-       FROM users WHERE id = ?`,
-      [req.user.id]
-    );
+  `SELECT id, name, email, phone, pincode, gender, dob, block, district, state, address, createdAt
+   FROM users WHERE id = ?`,
+  [req.user.id]
+);
+
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
