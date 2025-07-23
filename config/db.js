@@ -63,6 +63,7 @@ const connectDB = async () => {
       imageUrl TEXT,
       businessName VARCHAR(100),
       location VARCHAR(255),
+      degree VARCHAR(100),
       phone VARCHAR(20),
       whatsapp VARCHAR(20),
       rating DECIMAL(3,2),
@@ -80,6 +81,7 @@ const connectDB = async () => {
       FOREIGN KEY (hospitalId) REFERENCES hospital(id)
     );
   `);
+
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctorReview (

@@ -28,6 +28,8 @@ app.use(express.json());
     const userRoutes = require('./routes/userRoutes');
     const blogRoutes = require('./routes/blogRoutes');
     const adsRoutes = require('./routes/galleryRoutes');
+    const whatsappRoutes = require('./routes/whatsappRoutes');
+
 
 
     // Mount routes
@@ -45,6 +47,8 @@ app.use(express.json());
     app.use('/api', complaintRoutes);
     app.use('/api', blogRoutes);
     app.use('/api/ads', adsRoutes);
+    app.use('/api', whatsappRoutes);
+
 
 
 
