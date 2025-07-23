@@ -151,3 +151,21 @@ exports.deleteGallery = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
+
+// GET DISTINCT GALLERY CATEGORIES
+exports.getGalleryCategories = async (req, res) => {
+  try {
+    const [categories] = await db.query(
+      `SELECT DISTINCT category FROM gallery WHERE category IS NOT NULL`
+    );
+
+    res.json({
+      result: 'Success',
+      resultData: categories.map((row) => row.category),
+    });
+  } catch (error) {
+    console.error('Error in getGalleryCategories:', error);
+    res.status(500).json({ result: 'Failed', message: error.message });
+  }
+};

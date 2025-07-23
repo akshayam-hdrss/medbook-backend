@@ -4,7 +4,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 router.post('/signup', async (req, res) => {
-  const { name, email, password, phone, pincode, gender, dob } = req.body;
+  const {
+    name,
+    email,
+    password,
+    phone,
+    pincode,
+    gender,
+    dob,
+    block,
+    district,
+    state
+  } = req.body;
 
   try {
     const [existing] = await global.db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -15,9 +26,9 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await global.db.query(
-      `INSERT INTO users (name, email, password, phone, pincode, gender, dob)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [name, email, hashedPassword, phone, pincode, gender, dob]
+      `INSERT INTO users (name, email, password, phone, pincode, gender, dob, block, district, state)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, email, hashedPassword, phone, pincode, gender, dob, block, district, state]
     );
 
     res.json({ message: 'User registered successfully', userId: result.insertId });

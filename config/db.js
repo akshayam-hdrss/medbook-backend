@@ -215,7 +215,10 @@ await db.query(`
     pincode VARCHAR(10),
     gender VARCHAR(10),
     dob DATE,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    block VARCHAR(100),
+    district VARCHAR(100),
+    state VARCHAR(100)
   )
 `);
 
