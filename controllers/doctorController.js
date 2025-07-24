@@ -129,14 +129,27 @@ exports.getDoctorById = async (req, res) => {
 
 try {
 
-  const flattened = Array.isArray(doctor.gallery)
-    ? flattenDeep(doctor.gallery)
-    : [doctor.gallery];
-  doctor.gallery = flattened;
+  let galleryData = doctor.gallery;
+  if (
+    Array.isArray(galleryData) &&
+    galleryData.length === 1 &&
+    typeof galleryData[0] === 'string' &&
+    galleryData[0].includes('https://')
+  ) {
+    galleryData = JSON.parse(galleryData[0]); 
+  }
+
+  // Now flatten
+  doctor.gallery = Array.isArray(galleryData)
+    ? flattenDeep(galleryData)
+    : [galleryData];
+
+  
 } catch (e) {
- 
+  
   doctor.gallery = doctor.gallery ? [doctor.gallery] : [];
 }
+
 
 
 
