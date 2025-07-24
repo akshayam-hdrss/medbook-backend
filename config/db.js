@@ -261,6 +261,23 @@ await db.query(`
   )
 `);
 
+// ✅ Schedule table
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS schedule (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT NOT NULL,
+      date DATE NOT NULL,
+      time TIME NOT NULL,
+      description TEXT,
+      doctorId INT NOT NULL,
+      doctorName VARCHAR(100),
+      username VARCHAR(100),
+      contactNo VARCHAR(15), 
+      status VARCHAR(50),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
 
 
 

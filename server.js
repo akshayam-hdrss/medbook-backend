@@ -29,6 +29,7 @@ app.use(express.json());
     const blogRoutes = require('./routes/blogRoutes');
     const adsRoutes = require('./routes/galleryRoutes');
     const whatsappRoutes = require('./routes/whatsappRoutes');
+    const scheduleRoutes = require('./routes/scheduleRoutes');
 
 
 
@@ -36,6 +37,7 @@ app.use(express.json());
     app.get('/', (req, res) => {
       res.send('✅ API is live and running...');
     });
+    app.use('/api/schedule', scheduleRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api/doctorType', doctorTypeRoutes);
