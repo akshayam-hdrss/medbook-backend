@@ -122,15 +122,23 @@ exports.getDoctorById = async (req, res) => {
     doctor.mapLink = doctor.mapLink || "";
     doctor.about = doctor.about || "";
     doctor.bannerUrl = doctor.bannerUrl || "";
-    try {
-      doctor.gallery = JSON.parse(doctor.gallery);
-      if (!Array.isArray(doctor.gallery)) {
-        doctor.gallery = [doctor.gallery]; // if a single string, wrap it in an array
-      }
-    } catch (e) {
-      doctor.gallery = doctor.gallery ? [doctor.gallery] : [];
-    }
     doctor.youtubeLink = doctor.youtubeLink || "";
+
+
+    const flattenDeep = (arr) => arr.flat(Infinity);
+
+try {
+
+  const flattened = Array.isArray(doctor.gallery)
+    ? flattenDeep(doctor.gallery)
+    : [doctor.gallery];
+  doctor.gallery = flattened;
+} catch (e) {
+ 
+  doctor.gallery = doctor.gallery ? [doctor.gallery] : [];
+}
+
+
 
     res.json({ result: "Success", resultData: doctor });
   } catch (error) {
