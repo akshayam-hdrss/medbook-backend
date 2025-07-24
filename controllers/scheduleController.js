@@ -20,15 +20,15 @@ function convertTo24HourFormat(timeStr) {
 }
 
 exports.createSchedule = async (req, res) => {
-  const { userId, date, time, description, doctorId, doctorName, username, status, contactNo } = req.body;
+  const { userId, date, time, description, doctorId, doctorName, username, status, contactNo, age } = req.body;
 
   try {
     const convertedTime = convertTo24HourFormat(time); // Convert to 24-hour format for DB
 
     const [result] = await db.query(
-      `INSERT INTO schedule (userId, date, time, description, doctorId, doctorName, username, status, contactNo)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, date, convertedTime, description, doctorId, doctorName, username, status, contactNo]
+      `INSERT INTO schedule (userId, date, time, description, doctorId, doctorName, username, status, contactNo, age)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [userId, date, convertedTime, description, doctorId, doctorName, username, status, contactNo, age]
     );
 
     // Setup email
@@ -50,6 +50,7 @@ exports.createSchedule = async (req, res) => {
 New schedule created:
 
 User: ${username} (ID: ${userId})
+Age: ${age}
 Doctor: ${doctorName} (ID: ${doctorId})
 Date: ${date}
 Time: ${time}

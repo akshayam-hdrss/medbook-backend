@@ -5,32 +5,29 @@ global.db;
 
 // CREATE GALLERY
 exports.createGallery = async (req, res) => {
-  const { category, typeId, itemId, imageUrl } = req.body;
+  const { category, typeId, itemId, imageUrl, youtubeLinks } = req.body;
 
   try {
-    let finalUrl;
-
-    if (Array.isArray(imageUrl)) {
-      // If imageUrl is an array
-      finalUrl = JSON.stringify(imageUrl);
-    } else if (typeof imageUrl === 'string') {
-      try {
-        // Try parsing it in case it's a stringified array
-        const parsed = JSON.parse(imageUrl);
-        finalUrl = Array.isArray(parsed)
-          ? JSON.stringify(parsed)
-          : JSON.stringify([imageUrl]);
-      } catch (err) {
-        // Not a JSON string, treat it as single image string
-        finalUrl = JSON.stringify([imageUrl]);
+    const formatArrayToJson = (data) => {
+      if (Array.isArray(data)) {
+        return JSON.stringify(data);
+      } else if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          return Array.isArray(parsed) ? JSON.stringify(parsed) : JSON.stringify([data]);
+        } catch {
+          return JSON.stringify([data]);
+        }
       }
-    } else {
-      finalUrl = JSON.stringify([]);
-    }
+      return JSON.stringify([]);
+    };
+
+    const finalImageUrl = formatArrayToJson(imageUrl);
+    const finalYoutubeLinks = formatArrayToJson(youtubeLinks);
 
     const [result] = await db.query(
-      `INSERT INTO gallery (category, typeId, itemId, imageUrl) VALUES (?, ?, ?, ?)`,
-      [category, typeId, itemId, finalUrl]
+      `INSERT INTO gallery (category, typeId, itemId, imageUrl, youtubeLinks) VALUES (?, ?, ?, ?, ?)`,
+      [category, typeId, itemId, finalImageUrl, finalYoutubeLinks]
     );
 
     res.status(200).json({
@@ -43,7 +40,7 @@ exports.createGallery = async (req, res) => {
   }
 };
 
-// GET GALLERY
+
 // GET GALLERY
 exports.getGallery = async (req, res) => {
   const { category } = req.params;
@@ -92,6 +89,13 @@ exports.getGallery = async (req, res) => {
         } catch (err) {
           return [];
         }
+      })(),
+      youtubeLinks: (() => {
+        try {
+          return row.youtubeLinks ? row.youtubeLinks : "[]";
+        } catch {
+          return [];
+        }
       })()
     }));
 
@@ -106,29 +110,29 @@ exports.getGallery = async (req, res) => {
 // UPDATE GALLERY
 exports.updateGallery = async (req, res) => {
   const { id } = req.params;
-  const { category, typeId, itemId, imageUrl } = req.body;
+  const { category, typeId, itemId, imageUrl, youtubeLinks } = req.body;
 
   try {
-    let finalUrl;
-
-    if (Array.isArray(imageUrl)) {
-      finalUrl = JSON.stringify(imageUrl);
-    } else if (typeof imageUrl === 'string') {
-      try {
-        const parsed = JSON.parse(imageUrl);
-        finalUrl = Array.isArray(parsed)
-          ? JSON.stringify(parsed)
-          : JSON.stringify([imageUrl]);
-      } catch (err) {
-        finalUrl = JSON.stringify([imageUrl]);
+    const formatArrayToJson = (data) => {
+      if (Array.isArray(data)) {
+        return JSON.stringify(data);
+      } else if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data);
+          return Array.isArray(parsed) ? JSON.stringify(parsed) : JSON.stringify([data]);
+        } catch {
+          return JSON.stringify([data]);
+        }
       }
-    } else {
-      finalUrl = JSON.stringify([]);
-    }
+      return JSON.stringify([]);
+    };
+
+    const finalImageUrl = formatArrayToJson(imageUrl);
+    const finalYoutubeLinks = formatArrayToJson(youtubeLinks);
 
     await db.query(
-      `UPDATE gallery SET category = ?, typeId = ?, itemId = ?, imageUrl = ? WHERE id = ?`,
-      [category, typeId, itemId, finalUrl, id]
+      `UPDATE gallery SET category = ?, typeId = ?, itemId = ?, imageUrl = ?, youtubeLinks = ? WHERE id = ?`,
+      [category, typeId, itemId, finalImageUrl, finalYoutubeLinks, id]
     );
 
     res.json({ result: "Success", message: "Gallery updated successfully" });
@@ -137,6 +141,7 @@ exports.updateGallery = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
 
 
 

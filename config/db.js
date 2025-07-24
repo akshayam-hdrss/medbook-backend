@@ -257,7 +257,8 @@ await db.query(`
     category VARCHAR(50),
     typeId INT DEFAULT NULL,
     itemId INT DEFAULT NULL,
-    imageUrl JSON
+    imageUrl JSON,
+    youtubeLinks JSON
   )
 `);
 
@@ -272,8 +273,8 @@ await db.query(`
       doctorId INT NOT NULL,
       doctorName VARCHAR(100),
       username VARCHAR(100),
-      contactNo VARCHAR(15), 
       status VARCHAR(50),
+      age VARCHAR(3),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
