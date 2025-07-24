@@ -319,6 +319,7 @@ exports.getTopDoctors = async (req, res) => {
           d.location,
           d.phone,
           d.whatsapp,
+          d.degree,
           COUNT(r.rating) AS ratingCount,
           IFNULL(AVG(r.rating), 0) AS avgRating,
           dt.id AS doctorTypeId,
@@ -347,6 +348,7 @@ exports.getTopDoctors = async (req, res) => {
       ratingCount: row.ratingCount,
       doctorTypeId: row.doctorTypeId,
       doctorTypeName: row.doctorTypeName || "",
+      degree: row.degree || "",
     }));
 
     res.json({
