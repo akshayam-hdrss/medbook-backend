@@ -306,21 +306,34 @@ exports.getReviews = async (req, res) => {
   }
 };
 
-exports.getTopDoctors = async (req, res) => {
 
+exports.getTopDoctors = async (req, res) => {
   try {
     const [rows] = await db.query(`
-      SELECT d.id, d.doctorName, d.imageUrl, d.businessName, d.location, d.phone, d.whatsapp,
-             COUNT(r.rating) AS ratingCount,
-             IFNULL(AVG(r.rating), 0) AS avgRating
-      FROM doctor d
-      LEFT JOIN doctorReview r ON d.id = r.doctorId
-      GROUP BY d.id
-      ORDER BY avgRating DESC, ratingCount DESC
-      LIMIT 10
+      WITH rankedDoctors AS (
+        SELECT 
+          d.id,
+          d.doctorName,
+          d.imageUrl,
+          d.businessName,
+          d.location,
+          d.phone,
+          d.whatsapp,
+          COUNT(r.rating) AS ratingCount,
+          IFNULL(AVG(r.rating), 0) AS avgRating,
+          dt.id AS doctorTypeId,
+          dt.name AS doctorTypeName,
+          ROW_NUMBER() OVER (
+            PARTITION BY d.doctorTypeId
+            ORDER BY AVG(r.rating) DESC, COUNT(r.rating) DESC
+          ) AS rn
+        FROM doctor d
+        LEFT JOIN doctorReview r ON d.id = r.doctorId
+        LEFT JOIN doctorType dt ON d.doctorTypeId = dt.id
+        GROUP BY d.id
+      )
+      SELECT * FROM rankedDoctors WHERE rn = 1
     `);
-
-    console.log("TopDoctors", rows);
 
     const topDoctors = rows.map((row) => ({
       id: row.id,
@@ -332,6 +345,8 @@ exports.getTopDoctors = async (req, res) => {
       whatsapp: row.whatsapp || "",
       rating: parseFloat(row.avgRating).toFixed(1),
       ratingCount: row.ratingCount,
+      doctorTypeId: row.doctorTypeId,
+      doctorTypeName: row.doctorTypeName || "",
     }));
 
     res.json({
@@ -343,4 +358,3 @@ exports.getTopDoctors = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
-
