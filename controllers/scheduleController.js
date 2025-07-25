@@ -78,3 +78,17 @@ exports.getAllSchedules = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch schedules' });
   }
 };
+
+exports.getSchedulesByUserId = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const [rows] = await db.query(
+      `SELECT doctorId, doctorName, date, time, description, status FROM schedule WHERE userId = ?`,
+      [userId]
+    );
+    res.status(200).json({ result: "Success", resultData: rows });
+  } catch (error) {
+    console.error('Fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch schedules for user' });
+  }
+};
