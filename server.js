@@ -30,6 +30,7 @@ app.use(express.json());
     const adsRoutes = require('./routes/galleryRoutes');
     const whatsappRoutes = require('./routes/whatsappRoutes');
     const scheduleRoutes = require('./routes/scheduleRoutes');
+    const charityRoutes = require('./routes/charityRoutes');
 
 
 
@@ -50,6 +51,7 @@ app.use(express.json());
     app.use('/api/ads', adsRoutes);
     app.use('/api', whatsappRoutes);
     app.use('/api/blog', blogRoutes);
+    app.use('/api/charities', charityRoutes);
 
 
 
