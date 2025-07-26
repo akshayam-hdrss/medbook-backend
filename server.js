@@ -47,9 +47,10 @@ app.use(express.json());
     app.use('/api/category', categoryRoutes);
     app.use('/api/user', userRoutes);
     app.use('/api', complaintRoutes);
-    app.use('/api', blogRoutes);
     app.use('/api/ads', adsRoutes);
     app.use('/api', whatsappRoutes);
+    app.use('/api/blog', blogRoutes);
+
 
 
 

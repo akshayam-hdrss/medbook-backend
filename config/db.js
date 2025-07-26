@@ -280,6 +280,33 @@ await db.query(`
   `);
 
 
+  await db.query(`
+      CREATE TABLE IF NOT EXISTS blogtopics (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        topic VARCHAR(255) NOT NULL,
+        bannerUrl TEXT
+      )
+    `);
+
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS blogs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      bannerImage VARCHAR(255),
+      title VARCHAR(255) NOT NULL,
+      content TEXT,
+      videoUrl VARCHAR(255),
+      imageUrl VARCHAR(255),
+      author VARCHAR(100),
+      category VARCHAR(100),
+      status VARCHAR(50),
+      gallery JSON,
+      publishDate DATETIME,
+      blogtopicsID INT,
+      FOREIGN KEY (blogtopicsID) REFERENCES blogtopics(id)
+    )
+  `);
+
+
 
 
 
