@@ -81,6 +81,9 @@ const connectDB = async () => {
       doctorTypeId INT,
       hospitalId INT,
       bannerUrl TEXT,
+      area VARCHAR(100),
+      district VARCHAR(100),
+      pincode VARCHAR(20),
       FOREIGN KEY (doctorTypeId) REFERENCES doctorType(id),
       FOREIGN KEY (hospitalId) REFERENCES hospital(id)
     );

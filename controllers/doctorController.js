@@ -4,7 +4,7 @@ const db = global.db;
 // ✅ Get all doctors (full details with average rating)
 exports.getAllDoctors = async (req, res) => {
   try {
-    const { doctorTypeId, hospitalId } = req.query;
+    const { doctorTypeId, hospitalId, district, area } = req.query;
 
     let doctorQuery = `
       SELECT d.*, IFNULL(AVG(r.rating), 0) as rating
@@ -22,6 +22,16 @@ exports.getAllDoctors = async (req, res) => {
     if (hospitalId) {
       doctorQuery += " AND d.hospitalId = ?";
       doctorParams.push(hospitalId);
+    }
+
+    if (district) {
+      doctorQuery += " AND d.district = ?";
+      doctorParams.push(district);
+    }
+
+    if (area) {
+      doctorQuery += " AND d.area = ?";
+      doctorParams.push(area);
     }
 
     doctorQuery += " GROUP BY d.id";
@@ -57,6 +67,9 @@ exports.getAllDoctors = async (req, res) => {
         gallery,
         doctorTypeId: d.doctorTypeId,
         hospitalId: d.hospitalId,
+        area: d.area || "",
+        district: d.district || "",
+        pincode: d.pincode || "",
       };
     });
 
@@ -123,6 +136,10 @@ exports.getDoctorById = async (req, res) => {
     doctor.about = doctor.about || "";
     doctor.bannerUrl = doctor.bannerUrl || "";
     doctor.youtubeLink = doctor.youtubeLink || "";
+    doctor.area = doctor.area || "";
+    doctor.district = doctor.district || "";
+    doctor.pincode = doctor.pincode || "";
+    
 
 
     const flattenDeep = (arr) => arr.flat(Infinity);
@@ -163,54 +180,59 @@ try {
 exports.addDoctor = async (req, res) => {
   try {
     const {
-  doctorName,
-  imageUrl,
-  businessName,
-  location,
-  phone,
-  whatsapp,
-  rating,
-  experience,
-  degree, // ← Add this
-  addressLine1,
-  addressLine2,
-  mapLink,
-  about,
-  youtubeLink,
-  gallery,
-  doctorTypeId,
-  hospitalId,
-  bannerUrl,
-} = req.body;
+      doctorName,
+      imageUrl,
+      businessName,
+      location,
+      phone,
+      whatsapp,
+      rating,
+      experience,
+      degree,
+      addressLine1,
+      addressLine2,
+      mapLink,
+      about,
+      youtubeLink,
+      gallery,
+      doctorTypeId,
+      hospitalId,
+      bannerUrl,
+      area,
+      district,
+      pincode,
+    } = req.body;
 
-const [result] = await db.query(
-  `INSERT INTO doctor (
-    doctorName, imageUrl, businessName, location, phone, whatsapp,
-    rating, experience, degree, addressLine1, addressLine2, mapLink, about,
-    youtubeLink, gallery, doctorTypeId, hospitalId, bannerUrl
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  [
-    doctorName,
-    imageUrl,
-    businessName,
-    location,
-    phone,
-    whatsapp,
-    rating,
-    experience,
-    degree,
-    addressLine1,
-    addressLine2,
-    mapLink,
-    about,
-    youtubeLink,
-    JSON.stringify(gallery || []),
-    doctorTypeId,
-    hospitalId,
-    bannerUrl,
-  ]
-);
-
+    const [result] = await db.query(
+      `INSERT INTO doctor (
+        doctorName, imageUrl, businessName, location, phone, whatsapp,
+        rating, experience, degree, addressLine1, addressLine2, mapLink, about,
+        youtubeLink, gallery, doctorTypeId, hospitalId, bannerUrl, area, district, pincode
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        doctorName,
+        imageUrl,
+        businessName,
+        location,
+        phone,
+        whatsapp,
+        rating,
+        experience,
+        degree,
+        addressLine1,
+        addressLine2,
+        mapLink,
+        about,
+        youtubeLink,
+        JSON.stringify(gallery || []),
+        doctorTypeId,
+        hospitalId,
+        bannerUrl,
+        area,
+        district,
+        pincode,
+      ]
+    );
 
     res.json({
       result: "Success",
@@ -227,53 +249,58 @@ exports.updateDoctor = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-  doctorName,
-  imageUrl,
-  businessName,
-  location,
-  phone,
-  whatsapp,
-  rating,
-  experience,
-  degree, // ← Add this
-  addressLine1,
-  addressLine2,
-  mapLink,
-  about,
-  gallery,
-  youtubeLink,
-  doctorTypeId,
-  hospitalId,
-  bannerUrl,
-} = req.body;
+      doctorName,
+      imageUrl,
+      businessName,
+      location,
+      phone,
+      whatsapp,
+      rating,
+      experience,
+      degree,
+      addressLine1,
+      addressLine2,
+      mapLink,
+      about,
+      gallery,
+      youtubeLink,
+      doctorTypeId,
+      hospitalId,
+      bannerUrl,
+      area,
+      district,
+      pincode,
+    } = req.body;
 
-await db.query(
-  `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, location=?, phone=?, whatsapp=?,
-    rating=?, experience=?, degree=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
-    gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, bannerUrl=? WHERE id=?`,
-  [
-    doctorName,
-    imageUrl,
-    businessName,
-    location,
-    phone,
-    whatsapp,
-    rating,
-    experience,
-    degree,
-    addressLine1,
-    addressLine2,
-    mapLink,
-    about,
-    JSON.stringify(gallery || []),
-    youtubeLink,
-    doctorTypeId,
-    hospitalId,
-    bannerUrl,
-    id,
-  ]
-);
-
+    await db.query(
+      `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, location=?, phone=?, whatsapp=?,
+        rating=?, experience=?, degree=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
+        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, bannerUrl=?, area=?, district=?, pincode=? WHERE id=?`,
+      [
+        doctorName,
+        imageUrl,
+        businessName,
+        location,
+        phone,
+        whatsapp,
+        rating,
+        experience,
+        degree,
+        addressLine1,
+        addressLine2,
+        mapLink,
+        about,
+        JSON.stringify(gallery || []),
+        youtubeLink,
+        doctorTypeId,
+        hospitalId,
+        bannerUrl,
+        area,
+        district,
+        pincode,
+        id,
+      ]
+    );
 
     res.json({ result: "Success", message: "Doctor updated" });
   } catch (error) {
