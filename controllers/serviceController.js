@@ -106,18 +106,22 @@ exports.addService = async (req, res) => {
   try {
     const {
       serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
-      addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId
+      addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId,
+      district, pincode // <-- Added fields
     } = req.body;
 
     const [result] = await db.query(`
       INSERT INTO service (
         serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
-        addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId,
+        district, pincode
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
       [
         serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
         addressLine1, addressLine2, mapLink, about, youtubeLink,
-        JSON.stringify(gallery || []), bannerUrl, serviceTypeId
+        JSON.stringify(gallery || []), bannerUrl, serviceTypeId,
+        district, pincode // <-- Added fields
       ]
     );
 
@@ -133,18 +137,22 @@ exports.updateService = async (req, res) => {
     const { id } = req.params;
     const {
       serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
-      addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId
+      addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId,
+      district, pincode // <-- Added fields
     } = req.body;
 
     await db.query(
       `UPDATE service SET
         serviceName=?, imageUrl=?, businessName=?, location=?, phone=?, whatsapp=?, experience=?,
-        addressLine1=?, addressLine2=?, mapLink=?, about=?, youtubeLink=?, gallery=?, bannerUrl=?, serviceTypeId=?
+        addressLine1=?, addressLine2=?, mapLink=?, about=?, youtubeLink=?, gallery=?, bannerUrl=?, serviceTypeId=?,
+        district=?, pincode=?
        WHERE id=?`,
       [
         serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
         addressLine1, addressLine2, mapLink, about, youtubeLink,
-        JSON.stringify(gallery || []), bannerUrl, serviceTypeId, id
+        JSON.stringify(gallery || []), bannerUrl, serviceTypeId,
+        district, pincode, // <-- Added fields
+        id
       ]
     );
 
@@ -188,7 +196,21 @@ exports.getServiceById = async (req, res) => {
 exports.getServicesByServiceTypeId = async (req, res) => {
   try {
     const { serviceTypeId } = req.params;
-    const [rows] = await db.query('SELECT * FROM service WHERE serviceTypeId = ?', [serviceTypeId]);
+    const { district, location } = req.query;
+
+    let query = 'SELECT * FROM service WHERE serviceTypeId = ?';
+    const params = [serviceTypeId];
+
+    if (district) {
+      query += ' AND district = ?';
+      params.push(district);
+    }
+    if (location) {
+      query += ' AND location = ?';
+      params.push(location);
+    }
+
+    const [rows] = await db.query(query, params);
 
     const parsedRows = rows.map((row) => ({
       ...row,
@@ -222,12 +244,12 @@ exports.deleteService = async (req, res) => {
 
 exports.getAllServices = async (req, res) => {
   try {
-    const { serviceTypeId } = req.query;
+    const { serviceTypeId, district, location } = req.query;
 
     let query = `
       SELECT 
         s.id, s.serviceName, s.imageUrl, s.businessName, s.location, s.phone, s.whatsapp,
-        s.experience, s.bannerUrl,
+        s.experience, s.bannerUrl, s.district, s.location,
         IFNULL(AVG(r.rating), 0) AS rating
       FROM service s
       LEFT JOIN serviceReview r ON s.id = r.serviceId
@@ -238,6 +260,14 @@ exports.getAllServices = async (req, res) => {
     if (serviceTypeId) {
       query += " AND s.serviceTypeId = ?";
       params.push(serviceTypeId);
+    }
+    if (district) {
+      query += " AND s.district = ?";
+      params.push(district);
+    }
+    if (location) {
+      query += " AND s.location = ?";
+      params.push(location);
     }
 
     query += " GROUP BY s.id";
@@ -254,8 +284,9 @@ exports.getAllServices = async (req, res) => {
       whatsapp: row.whatsapp || "",
       experience: row.experience || "",
       bannerUrl: row.bannerUrl || "",
-    //   rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0"
-    rating: "0.0"
+      district: row.district || "",
+      // rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0"
+      rating: "0.0"
     }));
 
     res.json({ result: "Success", resultData: services });

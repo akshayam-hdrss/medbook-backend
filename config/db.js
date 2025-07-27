@@ -149,6 +149,8 @@ await db.query(`
     gallery JSON,
     bannerUrl TEXT,
     serviceTypeId INT,
+    district VARCHAR(100),
+    pincode VARCHAR(20),
     FOREIGN KEY (serviceTypeId) REFERENCES serviceType(id)
       ON DELETE CASCADE ON UPDATE CASCADE
   )
@@ -206,6 +208,8 @@ await db.query(`
     youtubeLink TEXT,
     gallery JSON,
     bannerUrl TEXT,
+    district VARCHAR(100),
+    pincode VARCHAR(20),
     productTypeId INT,
     FOREIGN KEY (productTypeId) REFERENCES productType(id)
       ON DELETE CASCADE ON UPDATE CASCADE

@@ -104,13 +104,17 @@ exports.deleteProductType = async (req, res) => {
   }
 };
 
+
+// ------------ PRODUCT ------------
+
 // Add product
 exports.addProduct = async (req, res) => {
   try {
     const {
       productName, price, imageUrl, businessName, location, phone,
       whatsapp, experience, addressLine1, addressLine2, mapLink,
-      about, youtubeLink, gallery, bannerUrl, productTypeId
+      about, youtubeLink, gallery, bannerUrl, productTypeId,
+      district, pincode
     } = req.body;
 
     if (!productName || !productTypeId) {
@@ -124,12 +128,12 @@ exports.addProduct = async (req, res) => {
       INSERT INTO product (
         productName, price, imageUrl, businessName, location, phone, whatsapp,
         experience, addressLine1, addressLine2, mapLink, about, youtubeLink,
-        gallery, bannerUrl, productTypeId
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        gallery, bannerUrl, productTypeId, district, pincode
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       productName, price, imageUrl, businessName, location, phone, whatsapp,
       experience, addressLine1, addressLine2, mapLink, about, youtubeLink,
-      JSON.stringify(gallery || []), bannerUrl, productTypeId
+      JSON.stringify(gallery || []), bannerUrl, productTypeId, district, pincode
     ]);
 
     res.json({ result: "Success", message: "Product added", resultData: { id: result.insertId, productName } });
@@ -142,7 +146,21 @@ exports.addProduct = async (req, res) => {
 exports.getProductsByProductTypeId = async (req, res) => {
   try {
     const { productTypeId } = req.params;
-    const [rows] = await db.query('SELECT * FROM product WHERE productTypeId = ?', [productTypeId]);
+    const { location, district } = req.query; // Get from query params
+
+    let sql = 'SELECT * FROM product WHERE productTypeId = ?';
+    const params = [productTypeId];
+
+    if (location) {
+      sql += ' AND location = ?';
+      params.push(location);
+    }
+    if (district) {
+      sql += ' AND district = ?';
+      params.push(district);
+    }
+
+    const [rows] = await db.query(sql, params);
 
     const products = rows.map(row => ({
       id: row.id,
@@ -160,15 +178,16 @@ exports.getProductsByProductTypeId = async (req, res) => {
       about: row.about || "",
       youtubeLink: row.youtubeLink || "",
       gallery: (() => {
-  try {
-    
-    return row.gallery ? JSON.parse(row.gallery) : [];
-  } catch (err) {
-    return [];
-  }
-})(),
+        try {
+          return row.gallery ? JSON.parse(row.gallery) : [];
+        } catch (err) {
+          return [];
+        }
+      })(),
       bannerUrl: row.bannerUrl || "",
-      productTypeId: row.productTypeId
+      productTypeId: row.productTypeId,
+      district: row.district || "",
+      pincode: row.pincode || ""
     }));
 
     res.json({ result: "Success", resultData: products });
@@ -204,21 +223,20 @@ exports.getProductById = async (req, res) => {
       about: row.about || "",
       youtubeLink: row.youtubeLink || "",
       gallery: (() => {
-  try {
-    if (!row.gallery) return [];
-    if (row.gallery.trim().startsWith('[')) {
-      return JSON.parse(row.gallery);
-    }
-    // Fallback to CSV split
-    return row.gallery.split(',').map(x => x.trim());
-  } catch {
-    return [];
-  }
-})(),
-
-    //   gallery: row.gallery ? JSON.parse(row.gallery) : [],
+        try {
+          if (!row.gallery) return [];
+          if (row.gallery.trim().startsWith('[')) {
+            return JSON.parse(row.gallery);
+          }
+          return row.gallery.split(',').map(x => x.trim());
+        } catch {
+          return [];
+        }
+      })(),
       bannerUrl: row.bannerUrl || "",
-      productTypeId: row.productTypeId
+      productTypeId: row.productTypeId,
+      district: row.district || "",    // <-- add here
+      pincode: row.pincode || ""       // <-- add here
     };
 
     res.json({ result: "Success", resultData: product });
@@ -234,7 +252,8 @@ exports.updateProduct = async (req, res) => {
     const {
       productName, price, imageUrl, businessName, location, phone,
       whatsapp, experience, addressLine1, addressLine2, mapLink,
-      about, youtubeLink, gallery, bannerUrl, productTypeId
+      about, youtubeLink, gallery, bannerUrl, productTypeId,
+      district, pincode // <-- add here
     } = req.body;
 
     if (!productName || !productTypeId) {
@@ -248,12 +267,13 @@ exports.updateProduct = async (req, res) => {
       UPDATE product SET
         productName = ?, price = ?, imageUrl = ?, businessName = ?, location = ?,
         phone = ?, whatsapp = ?, experience = ?, addressLine1 = ?, addressLine2 = ?,
-        mapLink = ?, about = ?, youtubeLink = ?, gallery = ?, bannerUrl = ?, productTypeId = ?
+        mapLink = ?, about = ?, youtubeLink = ?, gallery = ?, bannerUrl = ?, productTypeId = ?,
+        district = ?, pincode = ?
       WHERE id = ?
     `, [
       productName, price, imageUrl, businessName, location, phone, whatsapp,
       experience, addressLine1, addressLine2, mapLink, about, youtubeLink,
-      JSON.stringify(gallery || []), bannerUrl, productTypeId, id
+      JSON.stringify(gallery || []), bannerUrl, productTypeId, district, pincode, id
     ]);
 
     res.json({ result: "Success", message: "Product updated" });
