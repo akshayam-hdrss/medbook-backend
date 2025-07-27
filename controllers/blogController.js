@@ -48,10 +48,10 @@ exports.getById = async (req, res) => {
 // 🟢 Create blog topic
 exports.create = async (req, res) => {
   try {
-    const { topic, bannerUrl } = req.body;
+    const { topic, bannerUrl, description} = req.body;
     const [result] = await db.query(
-      'INSERT INTO blogtopics (topic, bannerUrl) VALUES (?, ?)',
-      [topic, bannerUrl]
+      'INSERT INTO blogtopics (topic, bannerUrl, description) VALUES (?, ?, ?)',
+      [topic, bannerUrl, description]
     );
     res.status(201).json({
       result: "Success",
@@ -65,10 +65,10 @@ exports.create = async (req, res) => {
 // 🟢 Update blog topic
 exports.update = async (req, res) => {
   try {
-    const { topic, bannerUrl } = req.body;
+    const { topic, bannerUrl, description } = req.body;
     const [result] = await db.query(
-      'UPDATE blogtopics SET topic = ?, bannerUrl = ? WHERE id = ?',
-      [topic, bannerUrl, req.params.id]
+      'UPDATE blogtopics SET topic = ?, bannerUrl = ?, description = ? WHERE id = ?',
+      [topic, bannerUrl, description, req.params.id]
     );
     res.json({
       result: "Success",
@@ -191,3 +191,24 @@ exports.removeBlog = async (req, res) => {
     res.status(500).json({ result: "Failed", message: err.message });
   }
 };
+
+
+exports.getBlogsByTopic = async (req, res) => {
+  try {
+    const topicId = req.params.topicId;
+    const [rows] = await db.query('SELECT * FROM blogs WHERE blogtopicsID = ?', [topicId]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ result: "Failed", message: 'No blogs found for this topic' });
+    }
+
+    const resultData = rows.map(row => ({
+      ...row,
+      gallery: parseJsonArray(row.gallery)
+    }));
+
+    res.json({ result: "Success", resultData });
+  } catch (err) {
+    res.status(500).json({ result: "Failed", message: err.message });
+  }
+}

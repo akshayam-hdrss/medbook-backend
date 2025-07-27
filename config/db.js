@@ -295,7 +295,8 @@ await db.query(`
       CREATE TABLE IF NOT EXISTS blogtopics (
         id INT AUTO_INCREMENT PRIMARY KEY,
         topic VARCHAR(255) NOT NULL,
-        bannerUrl TEXT
+        bannerUrl TEXT,
+        description TEXT DEFAULT NULL
       )
     `);
 
@@ -342,8 +343,14 @@ await db.query(`
   )
 `);
 
-
-
+// districtArea table
+await db.query(`CREATE TABLE IF NOT EXISTS district_area (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  order_no INT NOT NULL DEFAULT 1,
+  district VARCHAR(100) NOT NULL,
+  area VARCHAR(100) NOT NULL
+)
+`);
 
 
 

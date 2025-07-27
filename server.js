@@ -32,6 +32,7 @@ app.use(express.json());
     const scheduleRoutes = require('./routes/scheduleRoutes');
     const charityRoutes = require('./routes/charityRoutes');
     const eventRoutes = require('./routes/eventRoutes');
+    const districtAreaRoutes = require('./routes/districtAreaRoutes');
 
 
 
@@ -40,20 +41,22 @@ app.use(express.json());
       res.send('✅ API is live and running...');
     });
     app.use('/api/schedule', scheduleRoutes);
-    app.use('/api', uploadRoutes);
-    app.use('/api', hospitalRoutes);
+    
     app.use('/api/doctorType', doctorTypeRoutes);
     app.use('/api/doctor', doctorRoutes);
     app.use('/api/services', serviceRoutes);
     app.use('/api/products', productRoutes);
     app.use('/api/category', categoryRoutes);
     app.use('/api/user', userRoutes);
-    app.use('/api', complaintRoutes);
     app.use('/api/ads', adsRoutes);
-    app.use('/api', whatsappRoutes);
     app.use('/api/blog', blogRoutes);
     app.use('/api/charities', charityRoutes);
     app.use('/api/event', eventRoutes);
+    app.use('/api/district-area', districtAreaRoutes);
+    app.use('/api', uploadRoutes);
+    app.use('/api', hospitalRoutes);
+    app.use('/api', complaintRoutes);
+    app.use('/api', whatsappRoutes);
 
 
 
