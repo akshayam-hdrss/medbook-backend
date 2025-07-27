@@ -43,6 +43,10 @@ const connectDB = async () => {
       mapLink TEXT,
       phone VARCHAR(20),
       hospitalTypeId INT,
+      address1 VARCHAR(255),
+      address2 VARCHAR(255),
+      district VARCHAR(100),
+      pincode VARCHAR(20),
       FOREIGN KEY (hospitalTypeId) REFERENCES hospitalType(id)
         ON DELETE SET NULL ON UPDATE CASCADE
     )

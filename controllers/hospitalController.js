@@ -68,7 +68,11 @@ exports.getAllHospitals = async (req, res) => {
       area: row.area || "",
       mapLink: row.mapLink || "",
       phone: row.phone || "",
-      hospitalTypeId: row.hospitalTypeId
+      hospitalTypeId: row.hospitalTypeId,
+      address1: row.address1 || "",
+      address2: row.address2 || "",
+      district: row.district || "",
+      pincode: row.pincode || ""
     }));
 
     res.json({ result: "Success", resultData: hospitals });
@@ -80,10 +84,22 @@ exports.getAllHospitals = async (req, res) => {
 exports.getHospitalsByType = async (req, res) => {
   try {
     const { hospitalTypeId } = req.params;
-    const [rows] = await db.query(
-      'SELECT * FROM hospital WHERE hospitalTypeId = ?',
-      [hospitalTypeId]
-    );
+    const { district, area } = req.query;
+
+    let query = 'SELECT * FROM hospital WHERE hospitalTypeId = ?';
+    const params = [hospitalTypeId];
+
+    if (district) {
+      query += ' AND district = ?';
+      params.push(district);
+    }
+
+    if (area) {
+      query += ' AND area = ?';
+      params.push(area);
+    }
+
+    const [rows] = await db.query(query, params);
 
     const hospitals = rows.map((row) => ({
       id: row.id,
@@ -92,7 +108,11 @@ exports.getHospitalsByType = async (req, res) => {
       area: row.area || "",
       mapLink: row.mapLink || "",
       phone: row.phone || "",
-      hospitalTypeId: row.hospitalTypeId
+      hospitalTypeId: row.hospitalTypeId,
+      address1: row.address1 || "",
+      address2: row.address2 || "",
+      district: row.district || "",
+      pincode: row.pincode || ""
     }));
 
     res.json({ result: "Success", resultData: hospitals });
@@ -101,11 +121,11 @@ exports.getHospitalsByType = async (req, res) => {
   }
 };
 
+
 exports.addHospital = async (req, res) => {
   try {
-    const { name, imageUrl, area, mapLink, phone, hospitalTypeId } = req.body;
+    const { name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode } = req.body;
 
-    // Validate
     if (!name || !hospitalTypeId) {
       return res.status(400).json({
         result: "Failed",
@@ -114,8 +134,10 @@ exports.addHospital = async (req, res) => {
     }
 
     const [result] = await db.query(
-      'INSERT INTO hospital (name, imageUrl, area, mapLink, phone, hospitalTypeId) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, imageUrl, area, mapLink, phone, hospitalTypeId]
+      `INSERT INTO hospital 
+      (name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode]
     );
 
     res.json({
@@ -128,7 +150,11 @@ exports.addHospital = async (req, res) => {
         area: area || "",
         mapLink: mapLink || "",
         phone: phone || "",
-        hospitalTypeId
+        hospitalTypeId,
+        address1: address1 || "",
+        address2: address2 || "",
+        district: district || "",
+        pincode: pincode || ""
       }
     });
   } catch (error) {
@@ -136,12 +162,12 @@ exports.addHospital = async (req, res) => {
   }
 };
 
+
 exports.updateHospital = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl, area, mapLink, phone, hospitalTypeId } = req.body;
+    const { name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode } = req.body;
 
-    // Validate
     if (!name || !hospitalTypeId) {
       return res.status(400).json({
         result: "Failed",
@@ -150,8 +176,11 @@ exports.updateHospital = async (req, res) => {
     }
 
     await db.query(
-      'UPDATE hospital SET name = ?, imageUrl = ?, area = ?, mapLink = ?, phone = ?, hospitalTypeId = ? WHERE id = ?',
-      [name, imageUrl, area, mapLink, phone, hospitalTypeId, id]
+      `UPDATE hospital 
+      SET name = ?, imageUrl = ?, area = ?, mapLink = ?, phone = ?, hospitalTypeId = ?, 
+          address1 = ?, address2 = ?, district = ?, pincode = ?
+      WHERE id = ?`,
+      [name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, id]
     );
 
     res.json({ result: "Success", message: "Hospital updated" });
@@ -159,6 +188,7 @@ exports.updateHospital = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
 
 exports.deleteHospital = async (req, res) => {
   try {
