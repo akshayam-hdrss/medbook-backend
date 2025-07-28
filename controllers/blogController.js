@@ -195,6 +195,7 @@ exports.removeBlog = async (req, res) => {
 
 exports.getBlogsByTopic = async (req, res) => {
   try {
+   
     const topicId = req.params.topicId;
     const [rows] = await db.query('SELECT * FROM blogs WHERE blogtopicsID = ?', [topicId]);
     
