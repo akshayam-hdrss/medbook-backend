@@ -3,15 +3,15 @@ const db = global.db;
 // Create new category
 exports.addCategory = async (req, res) => {
   try {
-    const { text, hospitalId } = req.body;
+    const { text, hospitalId, number } = req.body;
 
     if (!text || !hospitalId) {
       return res.status(400).json({ result: "Failed", message: "Missing required fields" });
     }
 
     await db.query(
-      "INSERT INTO category (text, hospitalId) VALUES (?, ?)",
-      [text, hospitalId]
+      "INSERT INTO category (text, hospitalId, number) VALUES (?, ?, ?)",
+      [text, hospitalId, number || 1]
     );
 
     res.json({ result: "Success", message: "Category added successfully" });
@@ -24,15 +24,15 @@ exports.addCategory = async (req, res) => {
 exports.updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { text } = req.body;
+    const { text , number } = req.body;
 
     if (!text) {
       return res.status(400).json({ result: "Failed", message: "Text is required" });
     }
 
     await db.query(
-      "UPDATE category SET text = ? WHERE id = ?",
-      [text, id]
+      "UPDATE category SET text = ?, number = ? WHERE id = ?",
+      [text, id , number]
     );
 
     res.json({ result: "Success", message: "Category updated successfully" });

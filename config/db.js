@@ -107,10 +107,15 @@ const connectDB = async () => {
       id INT AUTO_INCREMENT PRIMARY KEY,
       text VARCHAR(100) NOT NULL,
       hospitalId INT NOT NULL,
+      number INT NOT NULL DEFAULT 1,
       FOREIGN KEY (hospitalId) REFERENCES hospital(id)
         ON DELETE CASCADE ON UPDATE CASCADE
     );
   `);
+
+//   await db.query(`
+//   ALTER TABLE category ADD COLUMN number INT NOT NULL DEFAULT 1
+// `)
 
   // Create availableService table
 await db.query(`
