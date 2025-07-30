@@ -174,3 +174,63 @@ exports.getGalleryCategories = async (req, res) => {
     res.status(500).json({ result: 'Failed', message: error.message });
   }
 };
+
+
+exports.getCorrectGallery = async (req, res) => {
+  const { category } = req.params;
+  let { typeId, itemId } = req.query;
+
+  try {
+    // Handle undefined, null, or empty string as actual NULL
+    typeId = typeId === undefined || typeId === '' || typeId === 'null' ? null : typeId;
+    itemId = itemId === undefined || itemId === '' || itemId === 'null' ? null : itemId;
+
+    const [gallery] = await db.query(
+      `SELECT * FROM gallery 
+       WHERE category = ? 
+       AND ${typeId === null ? 'typeId IS NULL' : 'typeId = ?'} 
+       AND ${itemId === null ? 'itemId IS NULL' : 'itemId = ?'}`,
+      [
+        category,
+        ...(typeId === null ? [] : [typeId]),
+        ...(itemId === null ? [] : [itemId])
+      ]
+    );
+
+    if (!gallery.length) {
+      return res.json({
+        result: "Success",
+        message: "No table found",
+        resultData: []
+      });
+    }
+
+    const resultData = gallery.map((row) => ({
+      ...row,
+      imageUrl: (() => {
+        try {
+          return row.imageUrl ? row.imageUrl :'[]';
+        } catch (err) {
+          return [];
+        }
+      })(),
+      youtubeLinks: (() => {
+        try {
+          return row.youtubeLinks ? row.youtubeLinks : "[]";
+        } catch {
+          return [];
+        }
+      })()
+    }));
+
+    res.json({
+      result: "Success",
+      message: "Table found",
+      resultData
+    });
+
+  } catch (error) {
+    console.error("Error in getCorrectGallery:", error);
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
