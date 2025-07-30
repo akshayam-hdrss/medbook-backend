@@ -77,7 +77,7 @@ exports.getAllDoctors = async (req, res) => {
     let categories = [];
     if (hospitalId) {
       const [categoryRows] = await db.query(
-        "SELECT id, text FROM category WHERE hospitalId = ?",
+        "SELECT id, text, number FROM category WHERE hospitalId = ?",
         [hospitalId]
       );
 
