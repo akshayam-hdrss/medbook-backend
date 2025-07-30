@@ -33,6 +33,7 @@ app.use(express.json());
     const charityRoutes = require('./routes/charityRoutes');
     const eventRoutes = require('./routes/eventRoutes');
     const districtAreaRoutes = require('./routes/districtAreaRoutes');
+    const traditionalRoutes = require('./routes/traditionalRoutes');
 
 
 
@@ -55,6 +56,7 @@ app.use(express.json());
     app.use('/api/district-area', districtAreaRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
+    app.use('/api', traditionalRoutes);
     app.use('/api', complaintRoutes);
     app.use('/api', whatsappRoutes);
 

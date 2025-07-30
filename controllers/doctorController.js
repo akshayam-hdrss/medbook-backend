@@ -4,7 +4,7 @@ const db = global.db;
 // ✅ Get all doctors (full details with average rating)
 exports.getAllDoctors = async (req, res) => {
   try {
-    const { doctorTypeId, hospitalId, district, location } = req.query;
+    const { doctorTypeId, hospitalId, traditionalId, district, location } = req.query;
 
     let doctorQuery = `
       SELECT d.*, IFNULL(AVG(r.rating), 0) as rating
@@ -22,6 +22,11 @@ exports.getAllDoctors = async (req, res) => {
     if (hospitalId) {
       doctorQuery += " AND d.hospitalId = ?";
       doctorParams.push(hospitalId);
+    }
+
+    if (traditionalId) {
+      doctorQuery += " AND d.traditionalId = ?";
+      doctorParams.push(traditionalId);
     }
 
     if (district) {
@@ -69,6 +74,7 @@ exports.getAllDoctors = async (req, res) => {
         gallery,
         doctorTypeId: d.doctorTypeId,
         hospitalId: d.hospitalId,
+        traditionalId: d.traditionalId,
         district: d.district || "",
         pincode: d.pincode || "",
       };
@@ -203,6 +209,7 @@ exports.addDoctor = async (req, res) => {
       gallery,
       doctorTypeId,
       hospitalId,
+      traditionalId,
       bannerUrl,
       district,
       pincode,
@@ -212,8 +219,8 @@ exports.addDoctor = async (req, res) => {
       `INSERT INTO doctor (
         doctorName, imageUrl, businessName, designation, category, location, phone, whatsapp,
         rating, experience, degree, addressLine1, addressLine2, mapLink, about,
-        youtubeLink, gallery, doctorTypeId, hospitalId, bannerUrl, district, pincode
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        youtubeLink, gallery, doctorTypeId, hospitalId,traditionalId, bannerUrl, district, pincode
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         doctorName,
         imageUrl,
@@ -234,6 +241,7 @@ exports.addDoctor = async (req, res) => {
         JSON.stringify(gallery || []),
         doctorTypeId,
         hospitalId,
+        traditionalId,
         bannerUrl,
         district,
         pincode,
@@ -274,6 +282,7 @@ exports.updateDoctor = async (req, res) => {
       youtubeLink,
       doctorTypeId,
       hospitalId,
+      traditionalId,
       bannerUrl,
       district,
       pincode,
@@ -282,7 +291,7 @@ exports.updateDoctor = async (req, res) => {
     await db.query(
       `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, designation=?, category=?, location=?, phone=?, whatsapp=?,
         rating=?, experience=?, degree=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
-        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, bannerUrl=?, district=?, pincode=? WHERE id=?`,
+        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, traditionalId=?, bannerUrl=?, district=?, pincode=? WHERE id=?`,
       [
         doctorName,
         imageUrl,
@@ -303,6 +312,7 @@ exports.updateDoctor = async (req, res) => {
         youtubeLink,
         doctorTypeId,
         hospitalId,
+        traditionalId,
         bannerUrl,
         district,
         pincode,

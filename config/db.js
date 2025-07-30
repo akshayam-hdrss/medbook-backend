@@ -53,6 +53,33 @@ const connectDB = async () => {
   `);
 
   await db.query(`
+  CREATE TABLE IF NOT EXISTS traditionalType (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT
+  )
+`);
+
+// Create traditional table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS traditional (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    area VARCHAR(100),
+    mapLink TEXT,
+    phone VARCHAR(20),
+    traditionalTypeId INT,
+    address1 VARCHAR(255),
+    address2 VARCHAR(255),
+    district VARCHAR(100),
+    pincode VARCHAR(20),
+    FOREIGN KEY (traditionalTypeId) REFERENCES traditionalType(id)
+      ON DELETE SET NULL ON UPDATE CASCADE
+  )
+`);
+
+  await db.query(`
     CREATE TABLE IF NOT EXISTS doctorType (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
@@ -87,7 +114,8 @@ const connectDB = async () => {
       district VARCHAR(100),
       pincode VARCHAR(20),
       FOREIGN KEY (doctorTypeId) REFERENCES doctorType(id),
-      FOREIGN KEY (hospitalId) REFERENCES hospital(id)
+      FOREIGN KEY (hospitalId) REFERENCES hospital(id),
+      FOREIGN KEY (traditionalId) REFERENCES traditional(id)
     );
   `);
 
