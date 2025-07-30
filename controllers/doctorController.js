@@ -52,12 +52,14 @@ exports.getAllDoctors = async (req, res) => {
         doctorName: d.doctorName,
         imageUrl: d.imageUrl || "",
         businessName: d.businessName || "",
+        designation: d.designation || "",
+        degree: d.degree || "",
+        category: d.category || "",
         location: d.location || "",
         phone: d.phone || "",
         whatsapp: d.whatsapp || "",
         rating: parseFloat(d.rating).toFixed(1),
         experience: d.experience || "",
-        degree: d.degree || "",
         addressLine1: d.addressLine1 || "",
         addressLine2: d.addressLine2 || "",
         mapLink: d.mapLink || "",
@@ -124,6 +126,9 @@ exports.getDoctorById = async (req, res) => {
 
     doctor.imageUrl = doctor.imageUrl || "";
     doctor.businessName = doctor.businessName || "";
+    doctor.designation = doctor.designation || "";
+    doctor.category = doctor.category || "";
+    doctor.degree = doctor.degree || "";
     doctor.location = doctor.location || "";
     doctor.phone = doctor.phone || "";
     doctor.whatsapp = doctor.whatsapp || "";
@@ -181,6 +186,8 @@ exports.addDoctor = async (req, res) => {
       doctorName,
       imageUrl,
       businessName,
+      designation,
+      category,
       location,
       phone,
       whatsapp,
@@ -202,14 +209,16 @@ exports.addDoctor = async (req, res) => {
 
     const [result] = await db.query(
       `INSERT INTO doctor (
-        doctorName, imageUrl, businessName, location, phone, whatsapp,
+        doctorName, imageUrl, businessName, designation, category, location, phone, whatsapp,
         rating, experience, degree, addressLine1, addressLine2, mapLink, about,
         youtubeLink, gallery, doctorTypeId, hospitalId, bannerUrl, district, pincode
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         doctorName,
         imageUrl,
         businessName,
+        designation,
+        category,
         location,
         phone,
         whatsapp,
@@ -248,6 +257,8 @@ exports.updateDoctor = async (req, res) => {
       doctorName,
       imageUrl,
       businessName,
+      designation,
+      category,
       location,
       phone,
       whatsapp,
@@ -268,13 +279,15 @@ exports.updateDoctor = async (req, res) => {
     } = req.body;
 
     await db.query(
-      `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, location=?, phone=?, whatsapp=?,
+      `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, designation=?, category=?, location=?, phone=?, whatsapp=?,
         rating=?, experience=?, degree=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
         gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, bannerUrl=?, district=?, pincode=? WHERE id=?`,
       [
         doctorName,
         imageUrl,
         businessName,
+        designation,
+        category,
         location,
         phone,
         whatsapp,
@@ -383,6 +396,8 @@ exports.getTopDoctors = async (req, res) => {
       doctorName: row.doctorName,
       imageUrl: row.imageUrl || "",
       businessName: row.businessName || "",
+      designation: row.designation || "",
+      category: row.category || "",
       location: row.location || "",
       phone: row.phone || "",
       whatsapp: row.whatsapp || "",

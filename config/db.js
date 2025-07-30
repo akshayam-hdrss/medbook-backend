@@ -66,6 +66,8 @@ const connectDB = async () => {
       doctorName VARCHAR(100) NOT NULL,
       imageUrl TEXT,
       businessName VARCHAR(100),
+      designation VARCHAR(100),
+      category VARCHAR(100),  
       location VARCHAR(255),
       degree VARCHAR(100),
       phone VARCHAR(20),

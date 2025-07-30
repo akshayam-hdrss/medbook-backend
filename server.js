@@ -59,10 +59,6 @@ app.use(express.json());
     app.use('/api', whatsappRoutes);
 
 
-
-
-
-    
     app.listen(port, () => {
       console.log(`🚀 Server running at port ${port}`);
     });
