@@ -11,7 +11,7 @@ exports.addCategory = async (req, res) => {
 
     await db.query(
       "INSERT INTO category (text, hospitalId, number) VALUES (?, ?, ?)",
-      [text, hospitalId, number || 1]
+      [text, hospitalId, number]
     );
 
     res.json({ result: "Success", message: "Category added successfully" });
@@ -24,7 +24,7 @@ exports.addCategory = async (req, res) => {
 exports.updateCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { text , number } = req.body;
+    const { text, number } = req.body;
 
     if (!text) {
       return res.status(400).json({ result: "Failed", message: "Text is required" });
@@ -32,7 +32,7 @@ exports.updateCategory = async (req, res) => {
 
     await db.query(
       "UPDATE category SET text = ?, number = ? WHERE id = ?",
-      [text, id , number]
+      [text, number, id]
     );
 
     res.json({ result: "Success", message: "Category updated successfully" });
@@ -40,6 +40,8 @@ exports.updateCategory = async (req, res) => {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
+
+
 
 // Delete category
 exports.deleteCategory = async (req, res) => {
