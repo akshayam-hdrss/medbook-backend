@@ -84,6 +84,7 @@ exports.getAllDoctors = async (req, res) => {
       categories = categoryRows.map((c) => ({
         id: c.id,
         text: c.text,
+        number: c.number,
       }));
     }
 
