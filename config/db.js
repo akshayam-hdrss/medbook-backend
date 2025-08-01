@@ -109,6 +109,7 @@ await db.query(`
       gallery JSON,
       doctorTypeId INT,
       hospitalId INT,
+      traditionalId INT,
       bannerUrl TEXT,
       area VARCHAR(100),
       district VARCHAR(100),
@@ -386,6 +387,14 @@ await db.query(`CREATE TABLE IF NOT EXISTS district_area (
   area VARCHAR(100) NOT NULL
 )
 `);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS primecareicon (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    image TEXT
+  )
+  `)
 
 
 

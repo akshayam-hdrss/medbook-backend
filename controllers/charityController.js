@@ -106,5 +106,5 @@ exports.deleteCharity = async (req, res) => {
   } catch (error) {
     console.error('Delete Error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
-  }
+  }
 };
