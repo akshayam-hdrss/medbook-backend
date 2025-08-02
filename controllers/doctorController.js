@@ -157,7 +157,30 @@ exports.getAllDoctors = async (req, res) => {
       }
 
       return {
-        // ... (keep all existing doctor fields)
+        id: d.id,
+        doctorName: d.doctorName,
+        imageUrl: d.imageUrl || "",
+        businessName: d.businessName || "",
+        designation: d.designation || "",
+        degree: d.degree || "",
+        category: d.category || "",
+        location: d.location || "",
+        phone: d.phone || "",
+        whatsapp: d.whatsapp || "",
+        rating: parseFloat(d.rating).toFixed(1),
+        experience: d.experience || "",
+        addressLine1: d.addressLine1 || "",
+        addressLine2: d.addressLine2 || "",
+        mapLink: d.mapLink || "",
+        about: d.about || "",
+        youtubeLink: d.youtubeLink || "",
+        bannerUrl: d.bannerUrl || "",
+        gallery,
+        doctorTypeId: d.doctorTypeId,
+        hospitalId: d.hospitalId,
+        traditionalId: d.traditionalId,
+        district: d.district || "",
+        pincode: d.pincode || "",
       };
     });
 
