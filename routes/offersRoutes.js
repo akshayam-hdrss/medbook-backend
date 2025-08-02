@@ -9,4 +9,4 @@ router.post('/', offersController.createOffer);
 router.put('/:id', offersController.updateOffer);
 router.delete('/:id', offersController.deleteOffer);
 
-module.exports = router;
+module.exports = router;

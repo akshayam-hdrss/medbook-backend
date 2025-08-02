@@ -4,22 +4,30 @@ const db = global.db; // your db connection file
 exports.getAllOffers = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM offers');
-    res.json(rows);
+    res.json({
+      result: "Success",
+      resultData: rows
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ result: "Error", error: err.message });
   }
 };
+
 
 // Get offer by ID
 exports.getOfferById = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM offers WHERE id = ?', [req.params.id]);
-    if (rows.length === 0) return res.status(404).json({ message: 'Offer not found' });
-    res.json(rows[0]);
+    if (rows.length === 0) return res.status(404).json({ result: "Error", message: 'Offer not found' });
+    res.json({
+      result: "Success",
+      resultData: rows[0]
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ result: "Error", error: err.message });
   }
 };
+
 
 // Create new offer
 exports.createOffer = async (req, res) => {
@@ -30,11 +38,19 @@ exports.createOffer = async (req, res) => {
       'INSERT INTO offers (name, gallery) VALUES (?, ?)',
       [name, galleryJson]
     );
-    res.status(201).json({ id: result.insertId, name, gallery });
+    res.status(201).json({
+      result: "Success",
+      resultData: {
+        id: result.insertId,
+        name,
+        gallery
+      }
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ result: "Error", error: err.message });
   }
 };
+
 
 // Update an offer
 exports.updateOffer = async (req, res) => {
@@ -45,20 +61,27 @@ exports.updateOffer = async (req, res) => {
       'UPDATE offers SET name = ?, gallery = ? WHERE id = ?',
       [name, galleryJson, req.params.id]
     );
-    if (result.affectedRows === 0) return res.status(404).json({ message: 'Offer not found' });
-    res.json({ message: 'Offer updated successfully' });
+    if (result.affectedRows === 0) return res.status(404).json({ result: "Error", message: 'Offer not found' });
+    res.json({
+      result: "Success",
+      resultData: { message: 'Offer updated successfully' }
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ result: "Error", error: err.message });
   }
 };
+
 
 // Delete an offer
 exports.deleteOffer = async (req, res) => {
   try {
     const [result] = await db.query('DELETE FROM offers WHERE id = ?', [req.params.id]);
-    if (result.affectedRows === 0) return res.status(404).json({ message: 'Offer not found' });
-    res.json({ message: 'Offer deleted successfully' });
+    if (result.affectedRows === 0) return res.status(404).json({ result: "Error", message: 'Offer not found' });
+    res.json({
+      result: "Success",
+      resultData: { message: 'Offer deleted successfully' }
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    res.status(500).json({ result: "Error", error: err.message });
+  }
 };
