@@ -135,16 +135,15 @@ await db.query(`
     CREATE TABLE IF NOT EXISTS category (
       id INT AUTO_INCREMENT PRIMARY KEY,
       text VARCHAR(100) NOT NULL,
-      hospitalId INT NOT NULL,
+      hospitalId INT DEFAULT NULL,
+      traditionalId INT DEFAULT NULL,
       number INT NOT NULL DEFAULT 1,
       FOREIGN KEY (hospitalId) REFERENCES hospital(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (traditionalId) REFERENCES traditional(id)
         ON DELETE CASCADE ON UPDATE CASCADE
     );
   `);
-
-//   await db.query(`
-//   ALTER TABLE category ADD COLUMN number INT NOT NULL DEFAULT 1
-// `)
 
   // Create availableService table
 await db.query(`
