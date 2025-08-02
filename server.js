@@ -35,6 +35,7 @@ app.use(express.json());
     const districtAreaRoutes = require('./routes/districtAreaRoutes');
     const traditionalRoutes = require('./routes/traditionalRoutes');
     const primecareIconRoutes = require('./routes/primecareIconRoutes');
+    const offerRoutes = require('./routes/offersRoutes');
 
 
 
@@ -61,6 +62,7 @@ app.use(express.json());
     app.use('/api', complaintRoutes);
     app.use('/api', whatsappRoutes);
     app.use('/api', primecareIconRoutes);
+    app.use('/api/offers', offerRoutes);
 
 
     app.listen(port, () => {

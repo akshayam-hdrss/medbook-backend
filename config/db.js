@@ -394,7 +394,16 @@ await db.query(`
     name VARCHAR(100) NOT NULL,
     image TEXT
   )
-  `)
+  `);
+
+  //offers table
+  await db.query(`
+  CREATE TABLE IF NOT EXISTS offers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    gallery JSON
+  )
+`);
 
 
 
