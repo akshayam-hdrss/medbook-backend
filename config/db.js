@@ -29,7 +29,8 @@ const connectDB = async () => {
     CREATE TABLE IF NOT EXISTS hospitalType (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
-      imageUrl TEXT
+      imageUrl TEXT,
+      order_no INT DEFAULT NULL
     )
   `);
 
@@ -47,6 +48,7 @@ const connectDB = async () => {
       address2 VARCHAR(255),
       district VARCHAR(100),
       pincode VARCHAR(20),
+      order_no INT DEFAULT NULL,      
       FOREIGN KEY (hospitalTypeId) REFERENCES hospitalType(id)
         ON DELETE SET NULL ON UPDATE CASCADE
     )
@@ -56,9 +58,11 @@ const connectDB = async () => {
   CREATE TABLE IF NOT EXISTS traditionalType (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    imageUrl TEXT
+    imageUrl TEXT,
+    order_no INT DEFAULT NULL
   )
 `);
+
 
 // Create traditional table
 await db.query(`
@@ -74,6 +78,7 @@ await db.query(`
     address2 VARCHAR(255),
     district VARCHAR(100),
     pincode VARCHAR(20),
+    order_no INT DEFAULT NULL,
     FOREIGN KEY (traditionalTypeId) REFERENCES traditionalType(id)
       ON DELETE SET NULL ON UPDATE CASCADE
   )
@@ -83,6 +88,7 @@ await db.query(`
     CREATE TABLE IF NOT EXISTS doctorType (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) NOT NULL,
+      order_no INT DEFAULT NULL,
       imageUrl TEXT
     );
   `);
@@ -114,13 +120,14 @@ await db.query(`
       area VARCHAR(100),
       district VARCHAR(100),
       pincode VARCHAR(20),
+      order_no INT DEFAULT NULL,
       FOREIGN KEY (doctorTypeId) REFERENCES doctorType(id),
       FOREIGN KEY (hospitalId) REFERENCES hospital(id),
       FOREIGN KEY (traditionalId) REFERENCES traditional(id)
     );
   `);
 
-  // await db.query(`DROP TABLE IF EXISTS doctorReview`);
+  
 
 
   await db.query(`
@@ -152,9 +159,12 @@ await db.query(`
   CREATE TABLE IF NOT EXISTS availableService (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    imageUrl TEXT
+    imageUrl TEXT,
+    order_no INT DEFAULT NULL
   )
 `);
+
+
 
 // Create serviceType table
 await db.query(`
@@ -163,6 +173,7 @@ await db.query(`
     name VARCHAR(100) NOT NULL,
     imageUrl TEXT,
     availableServiceId INT,
+    order_no INT DEFAULT NULL,
     FOREIGN KEY (availableServiceId) REFERENCES availableService(id)
       ON DELETE CASCADE ON UPDATE CASCADE
   )
@@ -188,10 +199,13 @@ await db.query(`
     serviceTypeId INT,
     district VARCHAR(100),
     pincode VARCHAR(20),
+    order_no INT DEFAULT NULL,
     FOREIGN KEY (serviceTypeId) REFERENCES serviceType(id)
       ON DELETE CASCADE ON UPDATE CASCADE
   )
 `);
+
+
 
 await db.query(`
   CREATE TABLE IF NOT EXISTS serviceReview (
@@ -210,7 +224,8 @@ await db.query(`
   CREATE TABLE IF NOT EXISTS availableProduct (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    imageUrl TEXT
+    imageUrl TEXT,
+    order_no INT DEFAULT NULL
   )
 `);
 
@@ -221,6 +236,7 @@ await db.query(`
     name VARCHAR(100) NOT NULL,
     imageUrl TEXT,
     availableProductId INT,
+    order_no INT DEFAULT NULL,
     FOREIGN KEY (availableProductId) REFERENCES availableProduct(id)
       ON DELETE CASCADE ON UPDATE CASCADE
   )
@@ -248,6 +264,7 @@ await db.query(`
     district VARCHAR(100),
     pincode VARCHAR(20),
     productTypeId INT,
+    order_no INT DEFAULT NULL,
     FOREIGN KEY (productTypeId) REFERENCES productType(id)
       ON DELETE CASCADE ON UPDATE CASCADE
   )

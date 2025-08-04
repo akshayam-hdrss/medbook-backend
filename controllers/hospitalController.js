@@ -7,7 +7,8 @@ exports.getAllHospitalTypes = async (req, res) => {
     const hospitalTypes = rows.map((row) => ({
       id: row.id,
       name: row.name,
-      imageUrl: row.imageUrl || ""
+      imageUrl: row.imageUrl || "",
+      order_no: row.order_no || null
     }));
 
     res.json({ result: "Success", resultData: hospitalTypes });
@@ -18,15 +19,15 @@ exports.getAllHospitalTypes = async (req, res) => {
 
 exports.addHospitalType = async (req, res) => {
   try {
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, order_no } = req.body;
     const [result] = await db.query(
-      'INSERT INTO hospitalType (name, imageUrl) VALUES (?, ?)',
-      [name, imageUrl]
+      'INSERT INTO hospitalType (name, imageUrl, order_no) VALUES (?, ?, ?)',
+      [name, imageUrl, order_no || null]
     );
     res.json({
       result: "Success",
       message: "Hospital type added",
-      resultData: { id: result.insertId, name, imageUrl: imageUrl || "" }
+      resultData: { id: result.insertId, name, imageUrl: imageUrl || "", order_no: order_no || null }
     });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
@@ -36,10 +37,10 @@ exports.addHospitalType = async (req, res) => {
 exports.updateHospitalType = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, order_no } = req.body;
     await db.query(
-      'UPDATE hospitalType SET name = ?, imageUrl = ? WHERE id = ?',
-      [name, imageUrl, id]
+      'UPDATE hospitalType SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?',
+      [name, imageUrl, order_no, id]
     );
     res.json({ result: "Success", message: "Hospital type updated" });
   } catch (error) {
@@ -72,7 +73,8 @@ exports.getAllHospitals = async (req, res) => {
       address1: row.address1 || "",
       address2: row.address2 || "",
       district: row.district || "",
-      pincode: row.pincode || ""
+      pincode: row.pincode || "",
+      order_no: row.order_no || null
     }));
 
     res.json({ result: "Success", resultData: hospitals });
@@ -112,7 +114,8 @@ exports.getHospitalsByType = async (req, res) => {
       address1: row.address1 || "",
       address2: row.address2 || "",
       district: row.district || "",
-      pincode: row.pincode || ""
+      pincode: row.pincode || "",
+      order_no: row.order_no || null
     }));
 
     res.json({ result: "Success", resultData: hospitals });
@@ -124,7 +127,7 @@ exports.getHospitalsByType = async (req, res) => {
 
 exports.addHospital = async (req, res) => {
   try {
-    const { name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode } = req.body;
+    const { name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, order_no } = req.body;
 
     if (!name || !hospitalTypeId) {
       return res.status(400).json({
@@ -135,9 +138,9 @@ exports.addHospital = async (req, res) => {
 
     const [result] = await db.query(
       `INSERT INTO hospital 
-      (name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode]
+      (name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, order_no) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, order_no]
     );
 
     res.json({
@@ -154,7 +157,8 @@ exports.addHospital = async (req, res) => {
         address1: address1 || "",
         address2: address2 || "",
         district: district || "",
-        pincode: pincode || ""
+        pincode: pincode || "",
+        order_no: order_no
       }
     });
   } catch (error) {
@@ -166,7 +170,7 @@ exports.addHospital = async (req, res) => {
 exports.updateHospital = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode } = req.body;
+    const { name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, order_no } = req.body;
 
     if (!name || !hospitalTypeId) {
       return res.status(400).json({
@@ -178,9 +182,9 @@ exports.updateHospital = async (req, res) => {
     await db.query(
       `UPDATE hospital 
       SET name = ?, imageUrl = ?, area = ?, mapLink = ?, phone = ?, hospitalTypeId = ?, 
-          address1 = ?, address2 = ?, district = ?, pincode = ?
+          address1 = ?, address2 = ?, district = ?, pincode = ? , order_no = ?
       WHERE id = ?`,
-      [name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, id]
+      [name, imageUrl, area, mapLink, phone, hospitalTypeId, address1, address2, district, pincode, order_no, id]
     );
 
     res.json({ result: "Success", message: "Hospital updated" });
