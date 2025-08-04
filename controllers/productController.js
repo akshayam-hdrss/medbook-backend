@@ -13,12 +13,12 @@ exports.getAllAvailableProducts = async (req, res) => {
 
 exports.addAvailableProduct = async (req, res) => {
   try {
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, order_no } = req.body;
     const [result] = await db.query(
-      'INSERT INTO availableProduct (name, imageUrl) VALUES (?, ?)',
-      [name, imageUrl]
+      'INSERT INTO availableProduct (name, imageUrl, order_no) VALUES (?, ?, ?)',
+      [name, imageUrl, order_no || null]
     );
-    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl } });
+    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl, order_no } });
   } catch (err) {
     res.status(500).json({ result: "Failed", message: err.message });
   }
@@ -27,8 +27,8 @@ exports.addAvailableProduct = async (req, res) => {
 exports.updateAvailableProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl } = req.body;
-    await db.query('UPDATE availableProduct SET name = ?, imageUrl = ? WHERE id = ?', [name, imageUrl, id]);
+    const { name, imageUrl, order_no } = req.body;
+    await db.query('UPDATE availableProduct SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, order_no, id]);
     res.json({ result: "Success", message: "Updated" });
   } catch (err) {
     res.status(500).json({ result: "Failed", message: err.message });
@@ -69,12 +69,12 @@ exports.getProductTypesByAvailableProductId = async (req, res) => {
 
 exports.addProductType = async (req, res) => {
   try {
-    const { name, imageUrl, availableProductId } = req.body;
+    const { name, imageUrl, order_no, availableProductId } = req.body;
     const [result] = await db.query(
-      'INSERT INTO productType (name, imageUrl, availableProductId) VALUES (?, ?, ?)',
-      [name, imageUrl, availableProductId]
+      'INSERT INTO productType (name, imageUrl, order_no, availableProductId) VALUES (?, ?, ?, ?)',
+      [name, imageUrl, order_no, availableProductId]
     );
-    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl, availableProductId } });
+    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl,order_no, availableProductId } });
   } catch (err) {
     res.status(500).json({ result: "Failed", message: err.message });
   }
@@ -83,10 +83,10 @@ exports.addProductType = async (req, res) => {
 exports.updateProductType = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl, availableProductId } = req.body;
+    const { name, imageUrl, order_no, availableProductId } = req.body;
     await db.query(
-      'UPDATE productType SET name = ?, imageUrl = ?, availableProductId = ? WHERE id = ?',
-      [name, imageUrl, availableProductId, id]
+      'UPDATE productType SET name = ?, imageUrl = ?, order_no = ?, availableProductId = ? WHERE id = ?',
+      [name, imageUrl, order_no, availableProductId, id]
     );
     res.json({ result: "Success", message: "Updated" });
   } catch (err) {
@@ -114,7 +114,7 @@ exports.addProduct = async (req, res) => {
       productName, price, imageUrl, businessName, location, phone,
       whatsapp, experience, addressLine1, addressLine2, mapLink,
       about, youtubeLink, gallery, bannerUrl, productTypeId,
-      district, pincode
+      district, pincode, order_no
     } = req.body;
 
     if (!productName || !productTypeId) {
@@ -128,12 +128,12 @@ exports.addProduct = async (req, res) => {
       INSERT INTO product (
         productName, price, imageUrl, businessName, location, phone, whatsapp,
         experience, addressLine1, addressLine2, mapLink, about, youtubeLink,
-        gallery, bannerUrl, productTypeId, district, pincode
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        gallery, bannerUrl, productTypeId, district, pincode, order_no
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       productName, price, imageUrl, businessName, location, phone, whatsapp,
       experience, addressLine1, addressLine2, mapLink, about, youtubeLink,
-      JSON.stringify(gallery || []), bannerUrl, productTypeId, district, pincode
+      JSON.stringify(gallery || []), bannerUrl, productTypeId, district, pincode, order_no
     ]);
 
     res.json({ result: "Success", message: "Product added", resultData: { id: result.insertId, productName } });
@@ -187,7 +187,8 @@ exports.getProductsByProductTypeId = async (req, res) => {
       bannerUrl: row.bannerUrl || "",
       productTypeId: row.productTypeId,
       district: row.district || "",
-      pincode: row.pincode || ""
+      pincode: row.pincode || "",
+      order_no: row.order_no || null
     }));
 
     res.json({ result: "Success", resultData: products });
@@ -235,8 +236,9 @@ exports.getProductById = async (req, res) => {
       })(),
       bannerUrl: row.bannerUrl || "",
       productTypeId: row.productTypeId,
-      district: row.district || "",    // <-- add here
-      pincode: row.pincode || ""       // <-- add here
+      district: row.district || "",
+      pincode: row.pincode || "" ,
+      order_no: row.order_no || null
     };
 
     res.json({ result: "Success", resultData: product });
@@ -253,7 +255,7 @@ exports.updateProduct = async (req, res) => {
       productName, price, imageUrl, businessName, location, phone,
       whatsapp, experience, addressLine1, addressLine2, mapLink,
       about, youtubeLink, gallery, bannerUrl, productTypeId,
-      district, pincode // <-- add here
+      district, pincode, order_no
     } = req.body;
 
     if (!productName || !productTypeId) {
@@ -268,12 +270,12 @@ exports.updateProduct = async (req, res) => {
         productName = ?, price = ?, imageUrl = ?, businessName = ?, location = ?,
         phone = ?, whatsapp = ?, experience = ?, addressLine1 = ?, addressLine2 = ?,
         mapLink = ?, about = ?, youtubeLink = ?, gallery = ?, bannerUrl = ?, productTypeId = ?,
-        district = ?, pincode = ?
+        district = ?, pincode = ?, order_no = ?
       WHERE id = ?
     `, [
       productName, price, imageUrl, businessName, location, phone, whatsapp,
       experience, addressLine1, addressLine2, mapLink, about, youtubeLink,
-      JSON.stringify(gallery || []), bannerUrl, productTypeId, district, pincode, id
+      JSON.stringify(gallery || []), bannerUrl, productTypeId, district, pincode, order_no, id
     ]);
 
     res.json({ result: "Success", message: "Product updated" });
