@@ -3,7 +3,7 @@ const db = global.db;
 // Get all available services
 exports.getAllAvailableServices = async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT id, name, imageUrl FROM availableService');
+    const [rows] = await db.query('SELECT id, name, imageUrl, order_no FROM availableService');
     res.json({ result: "Success", resultData: rows });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
@@ -13,12 +13,12 @@ exports.getAllAvailableServices = async (req, res) => {
 // Add a new available service
 exports.addAvailableService = async (req, res) => {
   try {
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, order_no } = req.body;
     const [result] = await db.query(
-      'INSERT INTO availableService (name, imageUrl) VALUES (?, ?)',
-      [name, imageUrl]
+      'INSERT INTO availableService (name, imageUrl, order_no) VALUES (?, ?, ?)',
+      [name, imageUrl, order_no || null]
     );
-    res.json({ result: "Success", message: "Service added", resultData: { id: result.insertId, name, imageUrl } });
+    res.json({ result: "Success", message: "Service added", resultData: { id: result.insertId, name, imageUrl, order_no } });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
@@ -28,8 +28,8 @@ exports.addAvailableService = async (req, res) => {
 exports.updateAvailableService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl } = req.body;
-    await db.query('UPDATE availableService SET name = ?, imageUrl = ? WHERE id = ?', [name, imageUrl, id]);
+    const { name, imageUrl, order_no } = req.body;
+    await db.query('UPDATE availableService SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, id]);
     res.json({ result: "Success", message: "Service updated" });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
@@ -66,10 +66,10 @@ exports.addServiceType = async (req, res) => {
   try {
     const { name, imageUrl, availableServiceId } = req.body;
     const [result] = await db.query(
-      'INSERT INTO serviceType (name, imageUrl, availableServiceId) VALUES (?, ?, ?)',
-      [name, imageUrl, availableServiceId]
+      'INSERT INTO serviceType (name, imageUrl, order_no, availableServiceId) VALUES (?, ?, ?, ?)',
+      [name, imageUrl, order_no, availableServiceId]
     );
-    res.json({ result: "Success", message: "Service type added", resultData: { id: result.insertId, name, imageUrl } });
+    res.json({ result: "Success", message: "Service type added", resultData: { id: result.insertId, name, imageUrl, availableServiceId } });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
@@ -79,10 +79,10 @@ exports.addServiceType = async (req, res) => {
 exports.updateServiceType = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl, availableServiceId } = req.body;
+    const { name, imageUrl, order_no, availableServiceId } = req.body;
     await db.query(
-      'UPDATE serviceType SET name = ?, imageUrl = ?, availableServiceId = ? WHERE id = ?',
-      [name, imageUrl, availableServiceId, id]
+      'UPDATE serviceType SET name = ?, imageUrl = ?, order_no = ?, availableServiceId = ? WHERE id = ?',
+      [name, imageUrl, order_no, availableServiceId, id]
     );
     res.json({ result: "Success", message: "Service type updated" });
   } catch (error) {
@@ -107,21 +107,21 @@ exports.addService = async (req, res) => {
     const {
       serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
       addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId,
-      district, pincode // <-- Added fields
+      district, pincode, order_no // <-- Added fields
     } = req.body;
 
     const [result] = await db.query(`
       INSERT INTO service (
         serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
         addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId,
-        district, pincode
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        district, pincode, order_no
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       [
         serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
         addressLine1, addressLine2, mapLink, about, youtubeLink,
         JSON.stringify(gallery || []), bannerUrl, serviceTypeId,
-        district, pincode // <-- Added fields
+        district, pincode, order_no // <-- Added fields
       ]
     );
 
@@ -138,20 +138,20 @@ exports.updateService = async (req, res) => {
     const {
       serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
       addressLine1, addressLine2, mapLink, about, youtubeLink, gallery, bannerUrl, serviceTypeId,
-      district, pincode // <-- Added fields
+      district, pincode, order_no
     } = req.body;
 
     await db.query(
       `UPDATE service SET
         serviceName=?, imageUrl=?, businessName=?, location=?, phone=?, whatsapp=?, experience=?,
         addressLine1=?, addressLine2=?, mapLink=?, about=?, youtubeLink=?, gallery=?, bannerUrl=?, serviceTypeId=?,
-        district=?, pincode=?
+        district=?, pincode=?, order_no=?
        WHERE id=?`,
       [
         serviceName, imageUrl, businessName, location, phone, whatsapp, experience,
         addressLine1, addressLine2, mapLink, about, youtubeLink,
         JSON.stringify(gallery || []), bannerUrl, serviceTypeId,
-        district, pincode, // <-- Added fields
+        district, pincode, order_no,
         id
       ]
     );
@@ -285,6 +285,7 @@ exports.getAllServices = async (req, res) => {
       experience: row.experience || "",
       bannerUrl: row.bannerUrl || "",
       district: row.district || "",
+      order_no: row.order_no || "",
       // rating: row.rating ? parseFloat(row.rating).toFixed(1) : "0.0"
       rating: "0.0"
     }));
