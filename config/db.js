@@ -120,6 +120,8 @@ await db.query(`
     );
   `);
 
+  // await db.query(`DROP TABLE IF EXISTS doctorReview`);
+
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctorReview (
@@ -127,7 +129,7 @@ await db.query(`
       doctorId INT,
       comment TEXT,
       rating DECIMAL(2,1),
-      FOREIGN KEY (doctorId) REFERENCES doctor(id)
+      FOREIGN KEY (doctorId) REFERENCES doctor(id) ON DELETE CASCADE
     );
   `);
 
@@ -275,6 +277,7 @@ await db.query(`
     userId INT,
     subject VARCHAR(255),
     description TEXT,
+    review TEXT,
     location VARCHAR(255),
     gallery JSON,
     status VARCHAR(50) DEFAULT 'Pending',

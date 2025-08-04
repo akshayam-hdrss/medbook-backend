@@ -41,68 +41,172 @@ exports.createGallery = async (req, res) => {
 };
 
 
-// GET GALLERY
+// Helper functions (add these at the top of your file)
+const parseGalleryContent = (content) => {
+  if (!content) return [];
+  try {
+    // Handle case where it's already an array
+    if (Array.isArray(content)) return content;
+    
+    // Handle case where it's a stringified array
+    const parsed = JSON.parse(content);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    // Handle case where it's a single URL string
+    if (typeof content === 'string' && content.startsWith('http')) {
+      return [content];
+    }
+    return [];
+  }
+};
+
+const checkIfRecordsExist = async (category, typeId = null, itemId = null) => {
+  try {
+    let query = `SELECT COUNT(*) as count FROM gallery WHERE category = ?`;
+    const params = [category];
+    
+    if (typeId !== null) {
+      query += ` AND typeId = ?`;
+      params.push(typeId);
+    } else {
+      query += ` AND typeId IS NULL`;
+    }
+    
+    if (itemId !== null) {
+      query += ` AND itemId = ?`;
+      params.push(itemId);
+    } else {
+      query += ` AND itemId IS NULL`;
+    }
+    
+    const [result] = await db.query(query, params);
+    return result[0].count > 0;
+  } catch (err) {
+    console.error('Error checking records:', err);
+    return false;
+  }
+};
+
+// Updated getGallery function
 exports.getGallery = async (req, res) => {
   const { category } = req.params;
   const { typeId, itemId } = req.query;
 
   try {
-    let gallery = [];
+    // Helper function to parse content safely
+    const parseContent = (content) => {
+      if (!content) return [];
+      try {
+        // Handle case where it's already an array
+        if (Array.isArray(content)) return content;
+        
+        // Handle stringified JSON
+        const parsed = JSON.parse(content);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        // Handle single URL strings
+        if (typeof content === 'string' && content.startsWith('http')) {
+          return [content];
+        }
+        return [];
+      }
+    };
 
-    // 1️⃣ Exact match: category + typeId + itemId
-    if (typeId && itemId) {
-      [gallery] = await db.query(
-        `SELECT * FROM gallery WHERE category = ? AND typeId = ? AND itemId = ?`,
-        [category, typeId, itemId]
-      );
+    // 1️⃣ First try exact match (category + typeId + itemId)
+    let queryParams = [category];
+    let query = `SELECT * FROM gallery WHERE category = ?`;
+    
+    if (typeId !== undefined) {
+      query += ` AND typeId = ?`;
+      queryParams.push(typeId);
+    } else {
+      query += ` AND typeId IS NULL`;
     }
 
-    // 2️⃣ category + typeId + itemId IS NULL
-    if (!gallery.length && typeId) {
+    if (itemId !== undefined) {
+      query += ` AND itemId = ?`;
+      queryParams.push(itemId);
+    } else {
+      query += ` AND itemId IS NULL`;
+    }
+
+    let [gallery] = await db.query(query, queryParams);
+
+    // Process results
+    const processResults = (rows) => {
+      return rows.map(row => ({
+        id: row.id,
+        category: row.category,
+        typeId: row.typeId,
+        itemId: row.itemId,
+        imageUrl: parseContent(row.imageUrl),
+        youtubeLinks: parseContent(row.youtubeLinks)
+      })).filter(item => 
+        item.imageUrl.length > 0 || item.youtubeLinks.length > 0
+      );
+    };
+
+    let resultData = processResults(gallery);
+
+    // 2️⃣ If no exact match found, try category + typeId (itemId NULL)
+    if (resultData.length === 0 && typeId !== undefined) {
       [gallery] = await db.query(
-        `SELECT * FROM gallery WHERE category = ? AND typeId = ? AND itemId IS NULL`,
+        `SELECT * FROM gallery 
+         WHERE category = ? AND typeId = ? AND itemId IS NULL`,
         [category, typeId]
       );
+      resultData = processResults(gallery);
     }
 
-    // 3️⃣ category + typeId IS NULL + itemId IS NULL
-    if (!gallery.length) {
+    // 3️⃣ If still no match, try category only (typeId NULL, itemId NULL)
+    if (resultData.length === 0) {
       [gallery] = await db.query(
-        `SELECT * FROM gallery WHERE category = ? AND typeId IS NULL AND itemId IS NULL`,
+        `SELECT * FROM gallery 
+         WHERE category = ? AND typeId IS NULL AND itemId IS NULL`,
         [category]
       );
+      resultData = processResults(gallery);
     }
 
-    // 4️⃣ fallback to 'default'
-    if (!gallery.length) {
+    // 4️⃣ Final fallback to default category
+    if (resultData.length === 0 && category !== 'default') {
       [gallery] = await db.query(
-        `SELECT * FROM gallery WHERE category = 'default' AND typeId IS NULL AND itemId IS NULL`
+        `SELECT * FROM gallery 
+         WHERE category = 'default' AND typeId IS NULL AND itemId IS NULL`
       );
+      resultData = processResults(gallery);
     }
-   
 
-    const resultData = gallery.map((row) => ({
-      ...row,
-      imageUrl: (() => {
-        try {
-          return row.imageUrl ? row.imageUrl :'[]';
-        } catch (err) {
-          return [];
-        }
-      })(),
-      youtubeLinks: (() => {
-        try {
-          return row.youtubeLinks ? row.youtubeLinks : "[]";
-        } catch {
-          return [];
-        }
-      })()
-    }));
+    if (resultData.length > 0) {
+      return res.json({ 
+        result: "Success", 
+        resultData,
+        message: "Gallery content found"
+      });
+    }
 
-    res.json({ result: "Success", resultData });
+    // No content found
+    res.json({
+      result: "Success",
+      resultData: [],
+      message: "No gallery content available",
+      debugInfo: {
+        requested: { category, typeId, itemId },
+        searched: [
+          "Exact match (category + typeId + itemId)",
+          "Category + typeId (itemId NULL)",
+          "Category only (typeId NULL, itemId NULL)",
+          "Default category fallback"
+        ]
+      }
+    });
+
   } catch (error) {
     console.error('Error in getGallery:', error);
-    res.status(500).json({ result: "Failed", message: error.message });
+    res.status(500).json({ 
+      result: "Failed", 
+      message: "Server error while fetching gallery"
+    });
   }
 };
 
