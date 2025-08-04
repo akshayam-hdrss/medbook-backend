@@ -102,7 +102,6 @@ exports.getHospitalsByType = async (req, res) => {
     }
 
     const [rows] = await db.query(query, params);
-    console.log("Hospitals fetched successfully:", rows);
 
     const hospitals = rows.map((row) => ({
       id: row.id,
@@ -118,7 +117,7 @@ exports.getHospitalsByType = async (req, res) => {
       pincode: row.pincode || "",
       order_no: row.order_no || null
     }));
-    console.log("Hospitals fetched successfully:", hospitals);
+ 
 
     res.json({ result: "Success", resultData: hospitals });
   } catch (error) {
