@@ -52,7 +52,7 @@ exports.getServiceTypesByAvailableServiceId = async (req, res) => {
   try {
     const { availableServiceId } = req.params;
     const [rows] = await db.query(
-      'SELECT id, name, imageUrl FROM serviceType WHERE availableServiceId = ?',
+      'SELECT id, name, imageUrl, order_no FROM serviceType WHERE availableServiceId = ?',
       [availableServiceId]
     );
     res.json({ result: "Success", resultData: rows });
@@ -64,12 +64,12 @@ exports.getServiceTypesByAvailableServiceId = async (req, res) => {
 // Add service type
 exports.addServiceType = async (req, res) => {
   try {
-    const { name, imageUrl, availableServiceId } = req.body;
+    const { name, imageUrl, order_no, availableServiceId } = req.body;
     const [result] = await db.query(
       'INSERT INTO serviceType (name, imageUrl, order_no, availableServiceId) VALUES (?, ?, ?, ?)',
       [name, imageUrl, order_no, availableServiceId]
     );
-    res.json({ result: "Success", message: "Service type added", resultData: { id: result.insertId, name, imageUrl, availableServiceId } });
+    res.json({ result: "Success", message: "Service type added", resultData: { id: result.insertId, name, imageUrl, order_no, availableServiceId } });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
