@@ -1,110 +1,5 @@
 const db = global.db;
 
-// ✅ Get all doctors (filtered fields with average rating)
-// ✅ Get all doctors (full details with average rating)
-// exports.getAllDoctors = async (req, res) => {
-//   try {
-//     const { doctorTypeId, hospitalId, traditionalId, district, location } = req.query;
-
-//     let doctorQuery = `
-//       SELECT d.*, IFNULL(AVG(r.rating), 0) as rating
-//       FROM doctor d
-//       LEFT JOIN doctorReview r ON d.id = r.doctorId
-//       WHERE 1=1
-//     `;
-//     const doctorParams = [];
-
-//     if (doctorTypeId) {
-//       doctorQuery += " AND d.doctorTypeId = ?";
-//       doctorParams.push(doctorTypeId);
-//     }
-
-//     if (hospitalId) {
-//       doctorQuery += " AND d.hospitalId = ?";
-//       doctorParams.push(hospitalId);
-//     }
-
-//     if (traditionalId) {
-//       doctorQuery += " AND d.traditionalId = ?";
-//       doctorParams.push(traditionalId);
-//     }
-
-//     if (district) {
-//       doctorQuery += " AND d.district = ?";
-//       doctorParams.push(district);
-//     }
-
-//     if (location) {
-//       doctorQuery += " AND d.location = ?";
-//       doctorParams.push(location);
-//     }
-
-//     doctorQuery += " GROUP BY d.id";
-
-//     const [doctorRows] = await db.query(doctorQuery, doctorParams);
-
-//     const doctors = doctorRows.map((d) => {
-//       let gallery = [];
-//       try {
-//         gallery = JSON.parse(d.gallery);
-//         if (!Array.isArray(gallery)) gallery = [gallery];
-//       } catch (e) {
-//         gallery = d.gallery ? [d.gallery] : [];
-//       }
-
-//       return {
-//         id: d.id,
-//         doctorName: d.doctorName,
-//         imageUrl: d.imageUrl || "",
-//         businessName: d.businessName || "",
-//         designation: d.designation || "",
-//         degree: d.degree || "",
-//         category: d.category || "",
-//         location: d.location || "",
-//         phone: d.phone || "",
-//         whatsapp: d.whatsapp || "",
-//         rating: parseFloat(d.rating).toFixed(1),
-//         experience: d.experience || "",
-//         addressLine1: d.addressLine1 || "",
-//         addressLine2: d.addressLine2 || "",
-//         mapLink: d.mapLink || "",
-//         about: d.about || "",
-//         youtubeLink: d.youtubeLink || "",
-//         bannerUrl: d.bannerUrl || "",
-//         gallery,
-//         doctorTypeId: d.doctorTypeId,
-//         hospitalId: d.hospitalId,
-//         traditionalId: d.traditionalId,
-//         district: d.district || "",
-//         pincode: d.pincode || "",
-//       };
-//     });
-
-//     let categories = [];
-//     if (hospitalId) {
-//       const [categoryRows] = await db.query(
-//         "SELECT id, text, number FROM category WHERE hospitalId = ?",
-//         [hospitalId]
-//       );
-
-//       categories = categoryRows.map((c) => ({
-//         id: c.id,
-//         text: c.text,
-//         number: c.number,
-//       }));
-//     }
-
-//     res.json({
-//       result: "Success",
-//       resultData: doctors,
-//       category: categories,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ result: "Failed", message: error.message });
-//   }
-// };
-
 
 exports.getAllDoctors = async (req, res) => {
   try {
@@ -181,6 +76,7 @@ exports.getAllDoctors = async (req, res) => {
         traditionalId: d.traditionalId,
         district: d.district || "",
         pincode: d.pincode || "",
+        order_no: d.order_no || null
       };
     });
 
@@ -264,6 +160,7 @@ exports.getDoctorById = async (req, res) => {
     doctor.youtubeLink = doctor.youtubeLink || "";
     doctor.district = doctor.district || "";
     doctor.pincode = doctor.pincode || "";
+    doctor.order_no = doctor.order_no || null;
     
 
 
@@ -328,14 +225,15 @@ exports.addDoctor = async (req, res) => {
       bannerUrl,
       district,
       pincode,
+      order_no
     } = req.body;
 
     const [result] = await db.query(
       `INSERT INTO doctor (
         doctorName, imageUrl, businessName, designation, category, location, phone, whatsapp,
         rating, experience, degree, addressLine1, addressLine2, mapLink, about,
-        youtubeLink, gallery, doctorTypeId, hospitalId,traditionalId, bannerUrl, district, pincode
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        youtubeLink, gallery, doctorTypeId, hospitalId,traditionalId, bannerUrl, district, pincode, order_no
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         doctorName,
         imageUrl,
@@ -360,6 +258,7 @@ exports.addDoctor = async (req, res) => {
         bannerUrl,
         district,
         pincode,
+        order_no
       ]
     );
 
@@ -401,12 +300,13 @@ exports.updateDoctor = async (req, res) => {
       bannerUrl,
       district,
       pincode,
+      order_no
     } = req.body;
 
     await db.query(
       `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, designation=?, category=?, location=?, phone=?, whatsapp=?,
         rating=?, experience=?, degree=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
-        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, traditionalId=?, bannerUrl=?, district=?, pincode=? WHERE id=?`,
+        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, traditionalId=?, bannerUrl=?, district=?, pincode=?, order_no=? WHERE id=?`,
       [
         doctorName,
         imageUrl,
@@ -431,6 +331,7 @@ exports.updateDoctor = async (req, res) => {
         bannerUrl,
         district,
         pincode,
+        order_no,
         id,
       ]
     );
