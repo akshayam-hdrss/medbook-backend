@@ -22,12 +22,12 @@ exports.addHospitalType = async (req, res) => {
     const { name, imageUrl, order_no } = req.body;
     const [result] = await db.query(
       'INSERT INTO hospitalType (name, imageUrl, order_no) VALUES (?, ?, ?)',
-      [name, imageUrl, order_no || null]
+      [name, imageUrl, order_no]
     );
     res.json({
       result: "Success",
       message: "Hospital type added",
-      resultData: { id: result.insertId, name, imageUrl: imageUrl || "", order_no: order_no || null }
+      resultData: { id: result.insertId, name, imageUrl: imageUrl || "", order_no: order_no}
     });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });

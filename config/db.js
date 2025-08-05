@@ -20,6 +20,16 @@ const connectDB = async () => {
     }
   });
 
+//   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
+// const [rows, fields] = await db.query('SELECT * FROM product');
+// console.log("📋 Total number of services:", rows.length);
+// console.log("📋 Service Columns:");
+// fields.forEach(field => {
+//   console.log('-', field.name);
+// });
+
+  
+
   // Create database if it doesn't exist
   await db.query(`CREATE DATABASE IF NOT EXISTS medbookdb`);
   await db.query(`USE medbookdb`);
@@ -33,6 +43,8 @@ const connectDB = async () => {
       order_no INT DEFAULT NULL
     )
   `);
+
+  
 
   // Create hospital table
   await db.query(`
@@ -84,6 +96,8 @@ await db.query(`
   )
 `);
 
+
+
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctorType (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -92,6 +106,8 @@ await db.query(`
       imageUrl TEXT
     );
   `);
+
+  
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctor (
@@ -136,6 +152,8 @@ await db.query(`
       doctorId INT,
       comment TEXT,
       rating DECIMAL(2,1),
+      userId INT,
+      userName VARCHAR(255),
       FOREIGN KEY (doctorId) REFERENCES doctor(id) ON DELETE CASCADE
     );
   `);
@@ -204,6 +222,7 @@ await db.query(`
       ON DELETE CASCADE ON UPDATE CASCADE
   )
 `);
+
 
 
 
