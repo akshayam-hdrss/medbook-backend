@@ -172,13 +172,26 @@ await db.query(`
     );
   `);
 
+
+  await db.query(`
+  CREATE TABLE IF NOT EXISTS availableServicetype (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    order_no INT DEFAULT NULL
+  )
+`);
+
   // Create availableService table
 await db.query(`
   CREATE TABLE IF NOT EXISTS availableService (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     imageUrl TEXT,
-    order_no INT DEFAULT NULL
+    order_no INT DEFAULT NULL,
+    availableServicetypeId INT NULL,
+    FOREIGN KEY (availableServicetypeId) REFERENCES availableServicetype(id)
+      ON DELETE SET NULL ON UPDATE CASCADE
   )
 `);
 

@@ -1,24 +1,87 @@
 const db = global.db;
 
-// Get all available services
-exports.getAllAvailableServices = async (req, res) => {
+
+// first page Type
+exports.getAllAvailableServicesType = async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT id, name, imageUrl, order_no FROM availableService');
+    const [rows] = await db.query('SELECT id, name, imageUrl, order_no FROM availableServicetype');
     res.json({ result: "Success", resultData: rows });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
 };
 
-// Add a new available service
-exports.addAvailableService = async (req, res) => {
+// Add a new available service Type
+exports.addAvailableServiceType = async (req, res) => {
   try {
     const { name, imageUrl, order_no } = req.body;
     const [result] = await db.query(
-      'INSERT INTO availableService (name, imageUrl, order_no) VALUES (?, ?, ?)',
+      'INSERT INTO availableServicetype (name, imageUrl, order_no) VALUES (?, ?, ?)',
       [name, imageUrl, order_no || null]
     );
     res.json({ result: "Success", message: "Service added", resultData: { id: result.insertId, name, imageUrl, order_no } });
+  } catch (error) {
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
+
+// Update available service Type
+exports.updateAvailableServicetype = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, imageUrl, order_no } = req.body;
+    await db.query('UPDATE availableServicetype SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, id]);
+    res.json({ result: "Success", message: "Service updated" });
+  } catch (error) {
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
+
+// Delete available service Type
+exports.deleteAvailableServiceType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query('DELETE FROM availableServicetype WHERE id = ?', [id]);
+    res.json({ result: "Success", message: "Service deleted" });
+  } catch (error) {
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
+
+// Get all available services
+exports.getAllAvailableServices = async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT id, name, imageUrl, order_no, availableServicetypeId FROM availableService');
+    res.json({ result: "Success", resultData: rows });
+  } catch (error) {
+    res.status(500).json({ result: "Failed", message: error.message });
+  }
+};
+
+// get all available services by availableServicetypeId
+exports.getAvailableServicesByType = async (req, res) => {  
+  try {
+    const { availableServicetypeId } = req.params;
+    const [rows] = await db.query(
+      'SELECT id, name, imageUrl, order_no FROM availableService WHERE availableServicetypeId = ?',
+      [availableServicetypeId]
+    );
+    res.json({ result: "Success", resultData: rows });
+  } catch (error) {
+    res.status(500).json({ result: "Failed", message: error.message });
+  } 
+}
+
+// Add a new available service
+exports.addAvailableService = async (req, res) => {
+  try {
+    const { name, imageUrl, order_no, availableServicetypeId } = req.body;
+
+    const [result] = await db.query(
+      'INSERT INTO availableService (name, imageUrl, order_no, availableServicetypeId) VALUES (?, ?, ?, ?)',
+      [name, imageUrl, order_no || null, availableServicetypeId ]
+    );
+    res.json({ result: "Success", message: "Service added", resultData: { id: result.insertId, name, imageUrl, order_no, availableServicetypeId } });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
   }
@@ -28,8 +91,8 @@ exports.addAvailableService = async (req, res) => {
 exports.updateAvailableService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl, order_no } = req.body;
-    await db.query('UPDATE availableService SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, id]);
+    const { name, imageUrl, order_no, availableServicetypeId } = req.body;
+    await db.query('UPDATE availableService SET name = ?, imageUrl = ?, order_no = ?, availableServicetypeId = ? WHERE id = ?', [name, imageUrl, order_no, availableServicetypeId, id]);
     res.json({ result: "Success", message: "Service updated" });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
