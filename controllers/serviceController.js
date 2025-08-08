@@ -61,10 +61,10 @@ exports.getAllAvailableServices = async (req, res) => {
 // get all available services by availableServicetypeId
 exports.getAvailableServicesByType = async (req, res) => {  
   try {
-    const { availableServicetypeId } = req.params;
+    const { id } = req.params;
     const [rows] = await db.query(
       'SELECT id, name, imageUrl, order_no FROM availableService WHERE availableServicetypeId = ?',
-      [availableServicetypeId]
+      [id]
     );
     res.json({ result: "Success", resultData: rows });
   } catch (error) {
