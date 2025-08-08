@@ -251,6 +251,16 @@ await db.query(`
   )
 `);
 
+// Create availableProductType table
+await db.query(`
+  CREATE TABLE IF NOT EXISTS availableProductType (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    order_no INT DEFAULT NULL
+  )
+`);
+
 // Create availableProduct table
 await db.query(`
   CREATE TABLE IF NOT EXISTS availableProduct (
@@ -260,6 +270,15 @@ await db.query(`
     order_no INT DEFAULT NULL
   )
 `);
+
+
+
+// const [rows, fields] = await db.query('SELECT * FROM availableProduct');
+// console.log("📋 Total number of availableProduct:", rows.length);
+// console.log("📋 availableProduct Columns:");
+// fields.forEach(field => {
+//   console.log('-', field.name);
+// });
 
 // Create productType table
 await db.query(`

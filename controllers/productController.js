@@ -1,5 +1,51 @@
 const db = global.db;
 
+
+// ------------ AVAILABLE PRODUCT TYPE ------------
+
+exports.getAllAvailableProductsType = async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM availableProductType');
+    res.json({ result: "Success", resultData: rows });
+  } catch (err) {
+    res.status(500).json({ result: "Failed", message: err.message });
+  }
+};
+
+exports.addAvailableProductType = async (req, res) => {
+  try {
+    const { name, imageUrl, order_no } = req.body;
+    const [result] = await db.query(
+      'INSERT INTO availableProductType (name, imageUrl, order_no) VALUES (?, ?, ?)',
+      [name, imageUrl, order_no || null]
+    );
+    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl, order_no } });
+  } catch (err) {
+    res.status(500).json({ result: "Failed", message: err.message });
+  }
+};
+
+exports.updateAvailableProductType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, imageUrl, order_no } = req.body;
+    await db.query('UPDATE availableProductType SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, order_no, id]);
+    res.json({ result: "Success", message: "Updated" });
+  } catch (err) {
+    res.status(500).json({ result: "Failed", message: err.message });
+  }
+};
+
+exports.deleteAvailableProductType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query('DELETE FROM availableProductType WHERE id = ?', [id]);
+    res.json({ result: "Success", message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ result: "Failed", message: err.message });
+  }
+};
+
 // ------------ AVAILABLE PRODUCT ------------
 
 exports.getAllAvailableProducts = async (req, res) => {
@@ -11,14 +57,26 @@ exports.getAllAvailableProducts = async (req, res) => {
   }
 };
 
+
+
+exports.getAvailableProductsByType = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await db.query('SELECT * FROM availableProduct WHERE availableProductTypeId = ?', [id]);
+    res.json({ result: "Success", resultData: rows });
+  } catch (err) {
+    res.status(500).json({ result: "Failed", message: err.message });
+  }
+}
+
 exports.addAvailableProduct = async (req, res) => {
   try {
-    const { name, imageUrl, order_no } = req.body;
+    const { name, imageUrl, order_no, availableProductTypeId } = req.body;
     const [result] = await db.query(
-      'INSERT INTO availableProduct (name, imageUrl, order_no) VALUES (?, ?, ?)',
-      [name, imageUrl, order_no || null]
+      'INSERT INTO availableProduct (name, imageUrl, order_no, availableProductTypeId) VALUES (?, ?, ?, ?)',
+      [name, imageUrl, order_no || null, availableProductTypeId]
     );
-    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl, order_no } });
+    res.json({ result: "Success", resultData: { id: result.insertId, name, imageUrl, order_no, availableProductTypeId } });
   } catch (err) {
     res.status(500).json({ result: "Failed", message: err.message });
   }
@@ -27,8 +85,8 @@ exports.addAvailableProduct = async (req, res) => {
 exports.updateAvailableProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl, order_no } = req.body;
-    await db.query('UPDATE availableProduct SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, order_no, id]);
+    const { name, imageUrl, order_no, availableProductTypeId } = req.body;
+    await db.query('UPDATE availableProduct SET name = ?, imageUrl = ?, order_no = ?, availableProductTypeId = ? WHERE id = ?', [name, imageUrl, order_no, id]);
     res.json({ result: "Success", message: "Updated" });
   } catch (err) {
     res.status(500).json({ result: "Failed", message: err.message });
