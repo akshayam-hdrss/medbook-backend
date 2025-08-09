@@ -30,7 +30,7 @@ exports.updateAvailableServicetype = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, imageUrl, order_no } = req.body;
-    await db.query('UPDATE availableServicetype SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, id]);
+    await db.query('UPDATE availableServicetype SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?', [name, imageUrl, order_no, id]);
     res.json({ result: "Success", message: "Service updated" });
   } catch (error) {
     res.status(500).json({ result: "Failed", message: error.message });
