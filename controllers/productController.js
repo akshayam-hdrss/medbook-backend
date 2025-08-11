@@ -86,7 +86,7 @@ exports.updateAvailableProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, imageUrl, order_no, availableProductTypeId } = req.body;
-    await db.query('UPDATE availableProduct SET name = ?, imageUrl = ?, order_no = ?, availableProductTypeId = ? WHERE id = ?', [name, imageUrl, order_no, id]);
+    await db.query('UPDATE availableProduct SET name = ?, imageUrl = ?, order_no = ?, availableProductTypeId = ? WHERE id = ?', [name, imageUrl, order_no, availableProductTypeId, id]);
     res.json({ result: "Success", message: "Updated" });
   } catch (err) {
     res.status(500).json({ result: "Failed", message: err.message });
