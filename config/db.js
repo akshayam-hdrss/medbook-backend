@@ -137,6 +137,8 @@ await db.query(`
       district VARCHAR(100),
       pincode VARCHAR(20),
       order_no INT DEFAULT NULL,
+      userId INT DEFAULT NULL,
+      isVerified BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (doctorTypeId) REFERENCES doctorType(id),
       FOREIGN KEY (hospitalId) REFERENCES hospital(id),
       FOREIGN KEY (traditionalId) REFERENCES traditional(id)
@@ -272,14 +274,6 @@ await db.query(`
 `);
 
 
-
-// const [rows, fields] = await db.query('SELECT * FROM availableProduct');
-// console.log("📋 Total number of availableProduct:", rows.length);
-// console.log("📋 availableProduct Columns:");
-// fields.forEach(field => {
-//   console.log('-', field.name);
-// });
-
 // Create productType table
 await db.query(`
   CREATE TABLE IF NOT EXISTS productType (
@@ -335,9 +329,19 @@ await db.query(`
     block VARCHAR(100),
     district VARCHAR(100),
     state VARCHAR(100),
-    address TEXT
+    address TEXT,
+    isDoctor BOOLEAN DEFAULT FALSE
   )
 `);
+
+// await db.query(`ALTER TABLE users ADD COLUMN isDoctor BOOLEAN DEFAULT FALSE`);
+// const [rows, fields] = await db.query('SELECT * FROM users');
+// console.log("📋 Total number of users:", rows.length);
+// console.log("📋 availableProduct users:");
+// fields.forEach(field => {
+//   console.log('-', field.name);
+// });
+
 
 await db.query(`
   CREATE TABLE IF NOT EXISTS complaints (
@@ -474,6 +478,50 @@ await db.query(`
     gallery JSON
   )
 `);
+
+ // ---- Bookings ----
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS bookings (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      doctorId INT NOT NULL,
+      userId INT NOT NULL,
+      patientName VARCHAR(100),
+      patientAge INT,
+      contactNumber VARCHAR(20),
+      description TEXT,
+      date DATE,
+      time TIME,
+      status ENUM('Pending','Confirmed','Rescheduled','Cancelled') DEFAULT 'Pending',
+      remarks TEXT,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (doctorId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+    ) ENGINE=InnoDB
+  `);
+
+  // ---- Notifications ----
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT NOT NULL,          -- receiver (doctor or patient)
+      bookingId INT NOT NULL,
+      title VARCHAR(255),
+      message TEXT,
+      isRead BOOLEAN DEFAULT FALSE,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (bookingId) REFERENCES bookings(id) ON DELETE CASCADE ON UPDATE CASCADE,
+      INDEX idx_notifications_userId (userId),
+      INDEX idx_notifications_bookingId (bookingId)
+    ) ENGINE=InnoDB
+  `);
+
+  // Ensure InnoDB engine for users table
+  await db.query(`
+    ALTER TABLE users ENGINE=InnoDB
+  `);
+
+
 
 
 

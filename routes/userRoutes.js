@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// -------------------- SIGNUP --------------------
 router.post('/signup', async (req, res) => {
   const {
     name,
@@ -15,7 +16,8 @@ router.post('/signup', async (req, res) => {
     block,
     district,
     state,
-    address
+    address,
+    isDoctor
   } = req.body;
 
   try {
@@ -27,9 +29,9 @@ router.post('/signup', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await global.db.query(
-      `INSERT INTO users (name, email, password, phone, pincode, gender, dob, block, district, state, address)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [name, email, hashedPassword, phone, pincode, gender, dob, block, district, state, address]
+      `INSERT INTO users (name, email, password, phone, pincode, gender, dob, block, district, state, address, isDoctor)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, email, hashedPassword, phone, pincode, gender, dob, block, district, state, address, isDoctor]
     );
 
     res.json({ message: 'User registered successfully', userId: result.insertId });
@@ -40,7 +42,7 @@ router.post('/signup', async (req, res) => {
 });
 
 
-// LOGIN
+// -------------------- LOGIN --------------------
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -53,9 +55,9 @@ router.post('/login', async (req, res) => {
 
     // Generate token WITHOUT iat or exp
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email },
+      { id: user.id, name: user.name, email: user.email, isDoctor: user.isDoctor }, // ✅ include isDoctor
       process.env.JWT_SECRET,
-      { noTimestamp: true } // disables `iat`
+      { noTimestamp: true }
     );
 
     res.json({ message: 'Login successful', token });
@@ -65,15 +67,15 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// PROTECTED PROFILE
+
+// -------------------- PROFILE (Protected) --------------------
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const [rows] = await global.db.query(
-  `SELECT id, name, email, phone, pincode, gender, dob, block, district, state, address, createdAt
-   FROM users WHERE id = ?`,
-  [req.user.id]
-);
-
+      `SELECT id, name, email, phone, pincode, gender, dob, block, district, state, address, isDoctor, createdAt
+       FROM users WHERE id = ?`,
+      [req.user.id]
+    );
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'User not found' });
@@ -87,9 +89,42 @@ router.get('/profile', authenticateToken, async (req, res) => {
 });
 
 
+// -------------------- EDIT PROFILE (Protected) --------------------
+router.put('/profile/edit', authenticateToken, async (req, res) => {
+  const {
+    name,
+    phone,
+    pincode,
+    gender,
+    dob,
+    block,
+    district,
+    state,
+    address,
+    isDoctor
+  } = req.body;
+
+  try {
+    const [result] = await global.db.query(
+      `UPDATE users
+       SET name=?, phone=?, pincode=?, gender=?, dob=?, block=?, district=?, state=?, address=?, isDoctor=?
+       WHERE id=?`,
+      [name, phone, pincode, gender, dob, block, district, state, address, isDoctor, req.user.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found or nothing to update' });
+    }
+
+    res.json({ message: 'Profile updated successfully' });
+  } catch (err) {
+    console.error("Profile update error:", err);
+    res.status(500).json({ message: 'Error updating profile' });
+  }
+});
 
 
-// JWT Middleware
+// -------------------- JWT Middleware --------------------
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader?.split(' ')[1];
