@@ -36,6 +36,7 @@ app.use(express.json());
     const traditionalRoutes = require('./routes/traditionalRoutes');
     const primecareIconRoutes = require('./routes/primecareIconRoutes');
     const offerRoutes = require('./routes/offersRoutes');
+    const bookingRoutes = require('./routes/bookingRoutes');
 
 
 
@@ -56,6 +57,7 @@ app.use(express.json());
     app.use('/api/charities', charityRoutes);
     app.use('/api/event', eventRoutes);
     app.use('/api/district-area', districtAreaRoutes);
+    app.use('/api/bookings', bookingRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api', traditionalRoutes);

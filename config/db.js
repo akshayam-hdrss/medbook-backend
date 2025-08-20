@@ -334,13 +334,6 @@ await db.query(`
   )
 `);
 
-// await db.query(`ALTER TABLE users ADD COLUMN isDoctor BOOLEAN DEFAULT FALSE`);
-// const [rows, fields] = await db.query('SELECT * FROM users');
-// console.log("📋 Total number of users:", rows.length);
-// console.log("📋 availableProduct users:");
-// fields.forEach(field => {
-//   console.log('-', field.name);
-// });
 
 
 await db.query(`
@@ -484,7 +477,9 @@ await db.query(`
     CREATE TABLE IF NOT EXISTS bookings (
       id INT AUTO_INCREMENT PRIMARY KEY,
       doctorId INT NOT NULL,
+      doctorName VARCHAR(100),
       userId INT NOT NULL,
+      username VARCHAR(100),
       patientName VARCHAR(100),
       patientAge INT,
       contactNumber VARCHAR(20),
@@ -503,7 +498,7 @@ await db.query(`
   await db.query(`
     CREATE TABLE IF NOT EXISTS notifications (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      userId INT NOT NULL,          -- receiver (doctor or patient)
+      userId INT NOT NULL,
       bookingId INT NOT NULL,
       title VARCHAR(255),
       message TEXT,
@@ -516,10 +511,7 @@ await db.query(`
     ) ENGINE=InnoDB
   `);
 
-  // Ensure InnoDB engine for users table
-  await db.query(`
-    ALTER TABLE users ENGINE=InnoDB
-  `);
+  
 
 
 

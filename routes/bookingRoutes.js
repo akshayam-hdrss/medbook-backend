@@ -1,20 +1,15 @@
 // routes/bookingRoutes.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const {
-  createBooking,
-  updateStatusByDoctor,
-  userAcceptReschedule,
-  userCancelBooking,
-  getBooking,
-  listBookings
-} = require('../controllers/bookingController');
+const bookingController = require("../controllers/bookingController");
 
-router.post('/', createBooking);
-router.put('/:id/status', updateStatusByDoctor);
-router.put('/:id/accept-reschedule', userAcceptReschedule);
-router.put('/:id/user-cancel', userCancelBooking);
-router.get('/:id', getBooking);
-router.get('/', listBookings);
+// Create booking
+router.post("/", bookingController.createBooking);
+
+// Get bookings by userId
+router.get("/user/:userId", bookingController.getBookingsByUser);
+
+// Get bookings by doctorId
+router.get("/doctor/:doctorId", bookingController.getBookingsByDoctor);
 
 module.exports = router;
