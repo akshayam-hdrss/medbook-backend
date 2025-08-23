@@ -15,4 +15,6 @@ router.get("/user/:userId", bookingController.getBookingsByUser);
 // Get bookings by doctorId
 router.get("/doctor/:doctorId", bookingController.getBookingsByDoctor);
 
+router.get("/doctor/phone/:phone", bookingController.getDoctorByPhone);
+
 module.exports = router;
