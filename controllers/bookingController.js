@@ -16,7 +16,8 @@ exports.createBooking = async (req, res) => {
       time,
       status,
       remarks,
-      paymentImageUrl
+      paymentImageUrl,
+      isOnline
     } = req.body;
 
     if (!doctorId || !userId || !patientName || !date || !time) {
@@ -25,8 +26,8 @@ exports.createBooking = async (req, res) => {
 
     const [result] = await global.db.query(
       `INSERT INTO bookings 
-        (doctorId, doctorName, userId, username, patientName, patientAge, contactNumber, description, date, time, status, remarks, paymentImageUrl) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (doctorId, doctorName, userId, username, patientName, patientAge, contactNumber, description, date, time, status, remarks, paymentImageUrl, isOnline) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         doctorId,
         doctorName || null,
@@ -40,7 +41,8 @@ exports.createBooking = async (req, res) => {
         time,
         status || "Pending",
         remarks || null,
-        paymentImageUrl || null
+        paymentImageUrl || null,
+        isOnline || 0
       ]
     );
 
@@ -78,7 +80,7 @@ exports.updateBooking = async (req, res) => {
       time,
       userId,
       doctorId,
-      editedBy // must be "user" or "doctor"
+      editedBy
     } = req.body;
 
     if (!status && !remarks && !date && !time) {

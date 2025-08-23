@@ -488,6 +488,7 @@ await db.query(`
       time TIME,
       status ENUM('Pending','Confirmed','Rescheduled','Cancelled') DEFAULT 'Pending',
       remarks TEXT,
+      paymentImageUrl TEXT,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (doctorId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
       FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
