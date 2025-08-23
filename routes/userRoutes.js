@@ -202,7 +202,7 @@ router.post('/reset-password', async (req, res) => {
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const [rows] = await global.db.query(
-      `SELECT id, name, phone, pincode, dob, createdAt FROM users WHERE id = ?`,
+      `SELECT id, name, phone, pincode, dob, isDoctor, createdAt FROM users WHERE id = ?`,
       [req.user.id]
     );
 
