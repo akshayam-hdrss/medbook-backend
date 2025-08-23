@@ -6,6 +6,9 @@ const bookingController = require("../controllers/bookingController");
 // Create booking
 router.post("/", bookingController.createBooking);
 
+// Update booking (status, remarks, date, time)
+router.put("/:bookingId", bookingController.updateBooking);
+
 // Get bookings by userId
 router.get("/user/:userId", bookingController.getBookingsByUser);
 

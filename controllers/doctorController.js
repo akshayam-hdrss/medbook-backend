@@ -76,7 +76,9 @@ exports.getAllDoctors = async (req, res) => {
         traditionalId: d.traditionalId,
         district: d.district || "",
         pincode: d.pincode || "",
-        order_no: d.order_no || null
+        order_no: d.order_no || null,
+        userId: d.userId || null,
+        isVerified: d.isVerified || false
       };
     });
 
@@ -161,6 +163,8 @@ exports.getDoctorById = async (req, res) => {
     doctor.district = doctor.district || "";
     doctor.pincode = doctor.pincode || "";
     doctor.order_no = doctor.order_no || null;
+    doctor.userId = doctor.userId || null;
+    doctor.isVerified = doctor.isVerified || false;
     
 
 
@@ -225,15 +229,17 @@ exports.addDoctor = async (req, res) => {
       bannerUrl,
       district,
       pincode,
-      order_no
+      order_no,
+      userId,
+      isVerified
     } = req.body;
 
     const [result] = await db.query(
       `INSERT INTO doctor (
         doctorName, imageUrl, businessName, designation, category, location, phone, whatsapp,
         rating, experience, degree, addressLine1, addressLine2, mapLink, about,
-        youtubeLink, gallery, doctorTypeId, hospitalId,traditionalId, bannerUrl, district, pincode, order_no
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        youtubeLink, gallery, doctorTypeId, hospitalId,traditionalId, bannerUrl, district, pincode, order_no, userId, isVerified
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         doctorName,
         imageUrl,
@@ -258,7 +264,9 @@ exports.addDoctor = async (req, res) => {
         bannerUrl,
         district,
         pincode,
-        order_no
+        order_no,
+        userId,
+        isVerified
       ]
     );
 
@@ -300,13 +308,15 @@ exports.updateDoctor = async (req, res) => {
       bannerUrl,
       district,
       pincode,
-      order_no
+      order_no,
+      userId,
+      isVerified
     } = req.body;
 
     await db.query(
       `UPDATE doctor SET doctorName=?, imageUrl=?, businessName=?, designation=?, category=?, location=?, phone=?, whatsapp=?,
         rating=?, experience=?, degree=?, addressLine1=?, addressLine2=?, mapLink=?, about=?,
-        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, traditionalId=?, bannerUrl=?, district=?, pincode=?, order_no=? WHERE id=?`,
+        gallery=?, youtubeLink=?, doctorTypeId=?, hospitalId=?, traditionalId=?, bannerUrl=?, district=?, pincode=?, order_no=?, userId=?, isVerified=? WHERE id=?`,
       [
         doctorName,
         imageUrl,
@@ -332,6 +342,8 @@ exports.updateDoctor = async (req, res) => {
         district,
         pincode,
         order_no,
+        userId,
+        isVerified,
         id,
       ]
     );

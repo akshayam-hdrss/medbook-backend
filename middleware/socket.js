@@ -1,4 +1,3 @@
-// socket.js
 let io;
 
 function initSocket(server) {
@@ -13,6 +12,15 @@ function initSocket(server) {
 
   io.on("connection", (socket) => {
     console.log("🔗 New client connected:", socket.id);
+
+    // ✅ User or Doctor joins a personal room
+    socket.on("join", ({ type, id }) => {
+      if (type && id) {
+        const room = `${type}_${id}`; // e.g. "user_12" or "doctor_5"
+        socket.join(room);
+        console.log(`📌 ${type} with ID ${id} joined room: ${room}`);
+      }
+    });
 
     socket.on("disconnect", () => {
       console.log("❌ Client disconnected:", socket.id);

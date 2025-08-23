@@ -1,14 +1,15 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const cors = require('cors');
+const http = require('http'); // 👈 add this
+const { initSocket } = require('./middleware/socket'); // 👈 import socket init
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-const cors = require('cors');
 app.use(cors());
-
 app.use(express.json());
 
 (async () => {
@@ -38,14 +39,11 @@ app.use(express.json());
     const offerRoutes = require('./routes/offersRoutes');
     const bookingRoutes = require('./routes/bookingRoutes');
 
-
-
     // Mount routes
     app.get('/', (req, res) => {
       res.send('✅ API is live and running...');
     });
     app.use('/api/schedule', scheduleRoutes);
-    
     app.use('/api/doctorType', doctorTypeRoutes);
     app.use('/api/doctor', doctorRoutes);
     app.use('/api/services', serviceRoutes);
@@ -66,8 +64,14 @@ app.use(express.json());
     app.use('/api', primecareIconRoutes);
     app.use('/api/offers', offerRoutes);
 
+    // ✅ Wrap app in HTTP server
+    const server = http.createServer(app);
 
-    app.listen(port, () => {
+    // ✅ Initialize Socket.IO
+    initSocket(server);
+
+    // ✅ Start server
+    server.listen(port, () => {
       console.log(`🚀 Server running at port ${port}`);
     });
   } catch (err) {
