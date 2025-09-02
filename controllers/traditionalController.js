@@ -37,7 +37,7 @@ exports.addTraditionalType = async (req, res) => {
 exports.updateTraditionalType = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, imageUrl } = req.body;
+    const { name, imageUrl, order_no } = req.body;
     await db.query(
       'UPDATE traditionalType SET name = ?, imageUrl = ?, order_no = ? WHERE id = ?',
       [name, imageUrl, order_no, id]
