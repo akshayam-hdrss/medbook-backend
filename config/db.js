@@ -47,24 +47,43 @@ const connectDB = async () => {
   
 
   // Create hospital table
-  await db.query(`
-    CREATE TABLE IF NOT EXISTS hospital (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      imageUrl TEXT,
-      area VARCHAR(100),
-      mapLink TEXT,
-      phone VARCHAR(20),
-      hospitalTypeId INT,
-      address1 VARCHAR(255),
-      address2 VARCHAR(255),
-      district VARCHAR(100),
-      pincode VARCHAR(20),
-      order_no INT DEFAULT NULL,      
-      FOREIGN KEY (hospitalTypeId) REFERENCES hospitalType(id)
-        ON DELETE SET NULL ON UPDATE CASCADE
-    )
-  `);
+  // await db.query(`
+  //   CREATE TABLE IF NOT EXISTS hospital (
+  //     id INT AUTO_INCREMENT PRIMARY KEY,
+  //     name VARCHAR(100) NOT NULL,
+  //     imageUrl TEXT,
+  //     area VARCHAR(100),
+  //     mapLink TEXT,
+  //     phone VARCHAR(20),
+  //     hospitalTypeId INT,
+  //     address1 VARCHAR(255),
+  //     address2 VARCHAR(255),
+  //     district VARCHAR(100),
+  //     pincode VARCHAR(20),
+  //     order_no INT DEFAULT NULL,      
+  //     FOREIGN KEY (hospitalTypeId) REFERENCES hospitalType(id)
+  //       ON DELETE SET NULL ON UPDATE CASCADE
+  //   )
+  // `);
+await db.query(`
+  CREATE TABLE IF NOT EXISTS hospital (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    area VARCHAR(100),
+    mapLink TEXT,
+    phone VARCHAR(20),
+    hospitalTypeId INT,
+    address1 VARCHAR(255),
+    address2 VARCHAR(255),
+    district VARCHAR(100),
+    pincode VARCHAR(20),
+    order_no INT DEFAULT NULL,
+    FOREIGN KEY (hospitalTypeId) REFERENCES hospitalType(id)
+      ON DELETE SET NULL ON UPDATE CASCADE
+  )
+`);
+
 
   await db.query(`
   CREATE TABLE IF NOT EXISTS traditionalType (
@@ -72,6 +91,35 @@ const connectDB = async () => {
     name VARCHAR(100) NOT NULL,
     imageUrl TEXT,
     order_no INT DEFAULT NULL
+  )
+`);
+
+// hospital_info table 
+await db.query(`CREATE TABLE IF NOT EXISTS hospital_info (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    banner_image_url VARCHAR(500),
+    journey_text TEXT,
+    mission_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+)
+`);
+
+// hospital information table
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS hospitalInformation (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hospitalId INT NOT NULL,
+    bedCount INT,
+    emergencyServices BOOLEAN,
+    specialties TEXT,
+    establishedYear INT,
+    website VARCHAR(255),
+    description TEXT,
+    FOREIGN KEY (hospitalId) REFERENCES hospital(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
   )
 `);
 

@@ -38,6 +38,7 @@ app.use(express.json());
     const primecareIconRoutes = require('./routes/primecareIconRoutes');
     const offerRoutes = require('./routes/offersRoutes');
     const bookingRoutes = require('./routes/bookingRoutes');
+    const hospitalInformationRoutes = require("./routes/hospitalInformationRoute");
 
     // Mount routes
     app.get('/', (req, res) => {
@@ -56,6 +57,7 @@ app.use(express.json());
     app.use('/api/event', eventRoutes);
     app.use('/api/district-area', districtAreaRoutes);
     app.use('/api/bookings', bookingRoutes);
+    app.use("/api/hospital-information", hospitalInformationRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api', traditionalRoutes);
@@ -63,6 +65,7 @@ app.use(express.json());
     app.use('/api', whatsappRoutes);
     app.use('/api', primecareIconRoutes);
     app.use('/api/offers', offerRoutes);
+    
 
     // ✅ Wrap app in HTTP server
     const server = http.createServer(app);
