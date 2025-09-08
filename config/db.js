@@ -95,33 +95,54 @@ await db.query(`
 `);
 
 // hospital_info table 
-await db.query(`CREATE TABLE IF NOT EXISTS hospital_info (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    banner_image_url VARCHAR(500),
-    journey_text TEXT,
-    mission_text TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)
-`);
+// await db.query(`CREATE TABLE IF NOT EXISTS hospital_info (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     name VARCHAR(255) NOT NULL,
+//     banner_image_url VARCHAR(500),
+//     journey_text TEXT,
+//     mission_text TEXT,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+// )
+// `);
 
 // hospital information table
 
-await db.query(`
-  CREATE TABLE IF NOT EXISTS hospitalInformation (
+
+
+  // await db.query(DROP TABLE IF EXISTS hospitalInformation);
+
+await db.query(`CREATE TABLE IF NOT EXISTS hospitalInformation (
     id INT AUTO_INCREMENT PRIMARY KEY,
     hospitalId INT NOT NULL,
-    bedCount INT,
-    emergencyServices BOOLEAN,
     specialties TEXT,
-    establishedYear INT,
     website VARCHAR(255),
+    address VARCHAR(200),
+    mission VARCHAR(200),
+    vision VARCHAR(200),
     description TEXT,
-    FOREIGN KEY (hospitalId) REFERENCES hospital(id)
-      ON DELETE CASCADE ON UPDATE CASCADE
-  )
+    banner_img VARCHAR(255),
+    ceo_name VARCHAR(255),
+    ceo_image VARCHAR(255),
+    nearest_location VARCHAR(255)
+  );
 `);
+
+// quiz questions 
+
+// await db.query(DROP TABLE IF EXISTS QuizQuestions);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS QuizQuestions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    question TEXT NOT NULL,
+    options JSON NOT NULL,
+    answer VARCHAR(255) NOT NULL,
+    stage INT NOT NULL,
+    CONSTRAINT chk_stage CHECK (stage BETWEEN 1 AND 6)
+  );
+`);
+
 
 
 // Create traditional table

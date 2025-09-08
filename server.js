@@ -39,6 +39,7 @@ app.use(express.json());
     const offerRoutes = require('./routes/offersRoutes');
     const bookingRoutes = require('./routes/bookingRoutes');
     const hospitalInformationRoutes = require("./routes/hospitalInformationRoute");
+    const quiz_question = require("./routes/quizRoutes");
 
     // Mount routes
     app.get('/', (req, res) => {
@@ -64,8 +65,10 @@ app.use(express.json());
     app.use('/api', complaintRoutes);
     app.use('/api', whatsappRoutes);
     app.use('/api', primecareIconRoutes);
+    app.use('/api', quiz_question)
     app.use('/api/offers', offerRoutes);
-    
+   
+
 
     // ✅ Wrap app in HTTP server
     const server = http.createServer(app);
