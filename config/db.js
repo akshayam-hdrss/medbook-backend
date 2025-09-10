@@ -143,6 +143,20 @@ await db.query(`
   );
 `);
 
+// quiz_userdata  
+// await db.query(DROP TABLE IF EXISTS quiz_stage_user_data);
+await db.query(`
+  CREATE TABLE IF NOT EXISTS quiz_stage_user_data (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT,
+    stageNumber INT,
+    marks INT,
+    extraInfo JSON,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_stage (userId, stageNumber)  -- ✅ Unique constraint
+  );
+`);
 
 
 // Create traditional table
