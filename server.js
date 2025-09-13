@@ -42,6 +42,8 @@ app.use(express.json());
     const quiz_question = require("./routes/quizRoutes");
     const quizUserDataRoutes = require("./routes/quiz_userdataroutes");
     const employeeRoutes = require('./routes/employeeRoutes');
+    const membershipRoutes = require("./routes/membershipRoutes");
+
 
 
 
@@ -65,6 +67,8 @@ app.use(express.json());
     app.use("/api/hospital-information", hospitalInformationRoutes);
     app.use("/api/quiz-userdata", quizUserDataRoutes);
     app.use('/api/employees', employeeRoutes);
+    app.use("/api/memberships", membershipRoutes);
+    app.use('/api/offers', offerRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api', traditionalRoutes);
@@ -72,7 +76,7 @@ app.use(express.json());
     app.use('/api', whatsappRoutes);
     app.use('/api', primecareIconRoutes);
     app.use('/api', quiz_question)
-    app.use('/api/offers', offerRoutes);
+    
    
 
 
