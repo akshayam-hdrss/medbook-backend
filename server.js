@@ -41,6 +41,9 @@ app.use(express.json());
     const hospitalInformationRoutes = require("./routes/hospitalInformationRoute");
     const quiz_question = require("./routes/quizRoutes");
     const quizUserDataRoutes = require("./routes/quiz_userdataroutes");
+    const employeeRoutes = require('./routes/employeeRoutes');
+
+
 
     // Mount routes
     app.get('/', (req, res) => {
@@ -61,6 +64,7 @@ app.use(express.json());
     app.use('/api/bookings', bookingRoutes);
     app.use("/api/hospital-information", hospitalInformationRoutes);
     app.use("/api/quiz-userdata", quizUserDataRoutes);
+    app.use('/api/employees', employeeRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api', traditionalRoutes);

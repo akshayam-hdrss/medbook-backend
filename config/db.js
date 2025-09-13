@@ -65,6 +65,7 @@ const connectDB = async () => {
   //       ON DELETE SET NULL ON UPDATE CASCADE
   //   )
   // `);
+  // Create hospital table
 await db.query(`
   CREATE TABLE IF NOT EXISTS hospital (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -595,9 +596,35 @@ await db.query(`
     ) ENGINE=InnoDB
   `);
 
-  
 
-
+  // ✅ Employees table
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS employees (
+        employeeNumber VARCHAR(50) PRIMARY KEY,
+        userName VARCHAR(100),
+        employeeName VARCHAR(150),
+        fatherName VARCHAR(150),
+        doorStreet VARCHAR(255),
+        villageArea VARCHAR(150),
+        district VARCHAR(100),
+        pincode VARCHAR(20),
+        mobileNumber VARCHAR(20),
+        gender VARCHAR(20),
+        age INT,
+        dateOfBirth DATE,
+        education VARCHAR(100),
+        designation VARCHAR(100),
+        aadharNo VARCHAR(20),
+        voterId VARCHAR(20),
+        bloodGroup VARCHAR(10),
+        salary DECIMAL(10,2),
+        employeeRole VARCHAR(50),
+        employeeAccess JSON,
+        isTerminated BOOLEAN DEFAULT false,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
 
 
 
