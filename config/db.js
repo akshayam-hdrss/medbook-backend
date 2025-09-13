@@ -629,7 +629,7 @@ await db.query(`
 
 
 await db.query(`
-  CREATE TABLE membership (
+  CREATE TABLE IF NOT EXISTS membership (
     id INT AUTO_INCREMENT PRIMARY KEY,
     addInName VARCHAR(255),
     contactPerson VARCHAR(255),
