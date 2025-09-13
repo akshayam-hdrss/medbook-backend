@@ -43,6 +43,9 @@ app.use(express.json());
     const quizUserDataRoutes = require("./routes/quiz_userdataroutes");
     const employeeRoutes = require('./routes/employeeRoutes');
     const membershipRoutes = require("./routes/membershipRoutes");
+    const emailRoutes = require("./routes/emailRoutes");
+
+
 
 
 
@@ -69,6 +72,7 @@ app.use(express.json());
     app.use('/api/employees', employeeRoutes);
     app.use("/api/memberships", membershipRoutes);
     app.use('/api/offers', offerRoutes);
+    app.use("/api/email", emailRoutes);
     app.use('/api', uploadRoutes);
     app.use('/api', hospitalRoutes);
     app.use('/api', traditionalRoutes);
