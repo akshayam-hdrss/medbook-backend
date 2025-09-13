@@ -626,8 +626,10 @@ await db.query(`
       )
     `);
 
-    await db.query(`
-  CREATE TABLE IF NOT EXISTS membership (
+
+
+await db.query(`
+  CREATE TABLE membership (
     id INT AUTO_INCREMENT PRIMARY KEY,
     addInName VARCHAR(255),
     contactPerson VARCHAR(255),
@@ -641,6 +643,7 @@ await db.query(`
     district VARCHAR(100),
     pincode VARCHAR(20),
     additionalBranch INT DEFAULT 0,
+    additionalDoctor INT DEFAULT 0,
     banner INT DEFAULT 0,
     premiumBanner INT DEFAULT 0,
     video INT DEFAULT 0,
@@ -648,6 +651,7 @@ await db.query(`
     paymentMode VARCHAR(50),
     transactionId VARCHAR(100),
     validFrom DATE,
+    validTo DATE,
     validityDays INT DEFAULT 0,
     executiveId VARCHAR(50),
     executiveName VARCHAR(255),
@@ -656,13 +660,11 @@ await db.query(`
     subCategory VARCHAR(100),
     subSubCategory VARCHAR(100),
     package VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'pending',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   )
 `);
-
-
-
 
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;

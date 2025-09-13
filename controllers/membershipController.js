@@ -73,6 +73,7 @@ exports.addMembership = async (req, res) => {
       district,
       pincode,
       additionalBranch,
+      additionalDoctor,
       banner,
       premiumBanner,
       video,
@@ -145,6 +146,7 @@ exports.addMembership = async (req, res) => {
     addField("district", district || null);
     addField("pincode", pincode || null);
     addField("additionalBranch", additionalBranch || 0);
+    addField("additionalDoctor", additionalDoctor || 0);
     addField("banner", banner || 0);
     addField("premiumBanner", premiumBanner || 0);
     addField("video", video || 0);
@@ -195,6 +197,7 @@ exports.addMembership = async (req, res) => {
       district: district || null,
       pincode: pincode || null,
       additionalBranch: additionalBranch || 0,
+      additionalDoctor: additionalDoctor || 0,
       banner: banner || 0,
       premiumBanner: premiumBanner || 0,
       video: video || 0,
@@ -289,7 +292,7 @@ exports.updateMembership = async (req, res) => {
     // Allowed updatable columns
     const allowed = [
       "addInName", "contactPerson", "mobile", "additionalNo", "franchiseBranch", "email", "website",
-      "address1", "address2", "district", "pincode", "additionalBranch", "banner", "premiumBanner",
+      "address1", "address2", "district", "pincode", "additionalBranch", "additionalDoctor", "banner", "premiumBanner",
       "video", "premiumVideo", "paymentMode", "transactionId", "validFrom", "validityDays",
       "executiveId", "executiveName", "executiveMobile", "category", "subCategory", "subSubCategory", "package"
     ];
