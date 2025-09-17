@@ -21,9 +21,9 @@ const connectDB = async () => {
   });
 
 //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-// const [rows, fields] = await db.query('SELECT * FROM product');
-// console.log("📋 Total number of services:", rows.length);
-// console.log("📋 Service Columns:");
+// const [rows, fields] = await db.query('SELECT * FROM membership');
+// console.log("📋 Total number:", rows.length);
+// console.log("📋 Columns:");
 // fields.forEach(field => {
 //   console.log('-', field.name);
 // });

@@ -59,7 +59,6 @@ function computeValidTo(validFrom, validityDays) {
  */
 exports.addMembership = async (req, res) => {
   try {
-    // destructure, map 'package' to pkg variable to avoid reserved word concerns
     const {
       addInName,
       contactPerson,
@@ -91,7 +90,6 @@ exports.addMembership = async (req, res) => {
       package: pkg
     } = req.body;
 
-    // basic required-field validation
     if (!addInName || !contactPerson || !mobile || !franchiseBranch || !pkg || !transactionId) {
       return res.status(400).json({
         result: false,
@@ -100,34 +98,22 @@ exports.addMembership = async (req, res) => {
       });
     }
 
-    // Determine if membershipId or membershipCode column exists in the table
-    const hasMembershipIdCol = await hasColumn("membership", "membershipId");
-    const hasMembershipCodeCol = await hasColumn("membership", "membershipCode");
-    let idColumnName = null;
-    if (hasMembershipIdCol) idColumnName = "membershipId";
-    else if (hasMembershipCodeCol) idColumnName = "membershipCode";
-
-    // Generate code only if DB has a column for it
-    let generatedCode = null;
-    if (idColumnName) {
-      generatedCode = await generateMembershipCode(franchiseBranch);
-    }
+    // ✅ Always generate membershipCode
+    const generatedCode = await generateMembershipCode(franchiseBranch);
 
     // compute validTo
     const validTo = computeValidTo(validFrom, validityDays);
 
-    // build dynamic insert to avoid mismatch if membershipId/membershipCode missing
     const columns = [];
     const placeholders = [];
     const values = [];
 
-    if (idColumnName) {
-      columns.push(idColumnName);
-      placeholders.push("?");
-      values.push(generatedCode);
-    }
+    // ✅ Always insert membershipCode
+    columns.push("membershipCode");
+    placeholders.push("?");
+    values.push(generatedCode);
 
-    // add all known columns (match your schema)
+    // helper
     const addField = (col, val) => {
       columns.push(col);
       placeholders.push("?");
@@ -163,12 +149,9 @@ exports.addMembership = async (req, res) => {
     addField("subSubCategory", subSubCategory || null);
     addField("package", pkg);
 
-    // optionally include validTo if computed
     if (validTo) {
       addField("validTo", validTo);
     }
-
-    // createdAt is defaulted by your schema, so no need to pass NOW() explicitly
 
     const sql = `INSERT INTO membership (${columns.join(",")}) VALUES (${placeholders.join(",")})`;
     const [result] = await db.query(sql, values);
@@ -181,45 +164,20 @@ exports.addMembership = async (req, res) => {
       });
     }
 
-    // prepare return object (echo useful fields)
-    const responseData = {
-      id: result.insertId,
-      membershipCode: generatedCode,
-      addInName,
-      contactPerson,
-      mobile,
-      additionalNo: additionalNo || null,
-      franchiseBranch,
-      email: email || null,
-      website: website || null,
-      address1: address1 || null,
-      address2: address2 || null,
-      district: district || null,
-      pincode: pincode || null,
-      additionalBranch: additionalBranch || 0,
-      additionalDoctor: additionalDoctor || 0,
-      banner: banner || 0,
-      premiumBanner: premiumBanner || 0,
-      video: video || 0,
-      premiumVideo: premiumVideo || 0,
-      paymentMode: paymentMode || null,
-      transactionId,
-      validFrom: validFrom || null,
-      validTo: validTo || null,
-      validityDays: validityDays || 0,
-      executiveId: executiveId || null,
-      executiveName: executiveName || null,
-      executiveMobile: executiveMobile || null,
-      category: category || null,
-      subCategory: subCategory || null,
-      subSubCategory: subSubCategory || null,
-      package: pkg
-    };
-
     return res.status(201).json({
       result: true,
       message: "✅ Membership created successfully",
-      resultData: responseData
+      resultData: {
+        id: result.insertId,
+        membershipCode: generatedCode,
+        addInName,
+        contactPerson,
+        mobile,
+        franchiseBranch,
+        package: pkg,
+        validFrom,
+        validTo
+      }
     });
   } catch (err) {
     console.error("❌ addMembership error:", err);
