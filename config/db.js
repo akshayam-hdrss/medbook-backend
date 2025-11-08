@@ -20,13 +20,7 @@ const connectDB = async () => {
     }
   });
 
-//   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-// const [rows, fields] = await db.query('SELECT * FROM membership');
-// console.log("📋 Total number:", rows.length);
-// console.log("📋 Columns:");
-// fields.forEach(field => {
-//   console.log('-', field.name);
-// });
+
 
   
 
@@ -44,27 +38,6 @@ const connectDB = async () => {
     )
   `);
 
-  
-
-  // Create hospital table
-  // await db.query(`
-  //   CREATE TABLE IF NOT EXISTS hospital (
-  //     id INT AUTO_INCREMENT PRIMARY KEY,
-  //     name VARCHAR(100) NOT NULL,
-  //     imageUrl TEXT,
-  //     area VARCHAR(100),
-  //     mapLink TEXT,
-  //     phone VARCHAR(20),
-  //     hospitalTypeId INT,
-  //     address1 VARCHAR(255),
-  //     address2 VARCHAR(255),
-  //     district VARCHAR(100),
-  //     pincode VARCHAR(20),
-  //     order_no INT DEFAULT NULL,      
-  //     FOREIGN KEY (hospitalTypeId) REFERENCES hospitalType(id)
-  //       ON DELETE SET NULL ON UPDATE CASCADE
-  //   )
-  // `);
   // Create hospital table
 await db.query(`
   CREATE TABLE IF NOT EXISTS hospital (
@@ -414,9 +387,14 @@ await db.query(`
     district VARCHAR(100),
     state VARCHAR(100),
     address TEXT,
-    isDoctor BOOLEAN DEFAULT FALSE
+    isDoctor BOOLEAN DEFAULT FALSE,
+    isPharmacy BOOLEAN DEFAULT FALSE,
+    isProduct BOOLEAN DEFAULT FALSE,
+    isLab BOOLEAN DEFAULT FALSE
   )
 `);
+
+// await db.query(`ALTER TABLE users ADD COLUMN isLab BOOLEAN DEFAULT FALSE`);
 
 
 
@@ -665,6 +643,45 @@ await db.query(`
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   )
 `);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS prescription (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    prescriptionId INT NOT NULL,
+    DoctorID INT,
+    patientName VARCHAR(100) NOT NULL,
+    age INT,
+    date DATE,
+    address TEXT,
+    description TEXT,
+    prescription JSON,
+    nextVisit DATE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (DoctorID) REFERENCES users(id)
+      ON DELETE SET NULL ON UPDATE CASCADE,
+    UNIQUE(DoctorID, prescriptionId)
+  )
+`);
+
+await db.query(`
+  CREATE TABLE IF NOT EXISTS medicalProduct (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctorId INT,
+    productName VARCHAR(255) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (doctorId) REFERENCES users(id)
+      ON DELETE CASCADE ON UPDATE CASCADE
+  )
+`);
+
+
+//   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
+const [rows, fields] = await db.query('SELECT * FROM users');
+console.log("📋 Total number:", rows.length);
+console.log("📋 Columns:");
+fields.forEach(field => {
+  console.log('-', field.name);
+});
 
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;

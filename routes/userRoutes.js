@@ -202,7 +202,7 @@ router.post('/reset-password', async (req, res) => {
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const [rows] = await global.db.query(
-      `SELECT id, name, phone, pincode, dob, isDoctor, createdAt FROM users WHERE id = ?`,
+      `SELECT id, name, phone, pincode, dob, isDoctor, isProduct, isPharmacy, isLab, createdAt FROM users WHERE id = ?`,
       [req.user.id]
     );
 
@@ -214,6 +214,108 @@ router.get('/profile', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching profile' });
   }
 });
+
+// ====================== UPDATE USER ROLE ======================
+router.put('/role', async (req, res) => {
+  const { id, isDoctor, isPharmacy, isProduct, isLab } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ message: 'User ID is required' });
+  }
+
+  const roles = [isDoctor, isPharmacy, isProduct , isLab];
+  const trueCount = roles.filter(r => r === true).length;
+
+  if (trueCount !== 1) {
+    return res.status(400).json({ message: 'Only one role must be selected as true' });
+  }
+
+  try {
+    const query = `UPDATE users 
+      SET isDoctor = ?, isPharmacy = ?, isProduct = ?, isLab = ? 
+      WHERE id = ?`;
+
+    await global.db.query(query, [
+      isDoctor ? true : false,
+      isPharmacy ? true : false,
+      isProduct ? true : false,
+      isLab ? true : false,
+      id
+    ]);
+
+    res.status(200).json({ message: 'User role updated successfully' });
+  } catch (err) {
+    console.error("Update role error:", err);
+    res.status(500).json({ message: 'Failed to update role' });
+  }
+});
+
+// ====================== GET USERS BY ROLE WITH SERVICE DETAILS ======================
+router.get('/users-by-role', async (req, res) => {
+  const { isPharmacy, isLab } = req.query; // expects ?isPharmacy=true or ?isLab=true
+
+  try {
+    // Base query
+    let query = `
+      SELECT 
+        u.id AS userId,
+        u.name AS userName,
+        u.phone AS userPhone,
+        u.isPharmacy,
+        u.isLab,
+        s.id AS serviceId,
+        s.serviceName,
+        s.businessName,
+        s.location,
+        s.phone AS servicePhone,
+        s.experience,
+        s.addressLine1,
+        s.addressLine2,
+        s.mapLink,
+        s.about,
+        s.youtubeLink,
+        s.gallery,
+        s.bannerUrl,
+        s.district,
+        s.pincode
+      FROM users u
+      LEFT JOIN service s ON u.phone = s.phone
+      WHERE 1=1
+    `;
+
+    const params = [];
+
+    // Filter conditions
+    if (isPharmacy === 'true') {
+      query += ` AND u.isPharmacy = true`;
+    }
+
+    if (isLab === 'true') {
+      query += ` AND u.isLab = true`;
+    }
+
+    // Prevent both true at once (optional)
+    if (isPharmacy === 'true' && isLab === 'true') {
+      return res
+        .status(400)
+        .json({ message: 'Please filter by only one role at a time (isPharmacy or isLab)' });
+    }
+
+    // Execute query
+    const [rows] = await global.db.query(query, params);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No matching users found' });
+    }
+
+    res.status(200).json({ users: rows });
+  } catch (err) {
+    console.error('Error fetching users by role with service:', err);
+    res.status(500).json({ message: 'Error fetching users' });
+  }
+});
+
+
 
 // ====================== JWT Middleware ======================
 function authenticateToken(req, res, next) {
