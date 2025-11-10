@@ -17,4 +17,5 @@ router.get("/doctor/:doctorId", bookingController.getBookingsByDoctor);
 
 router.get("/doctor/phone/:phone", bookingController.getDoctorByPhone);
 
+router.get("/user/phone/:phone", bookingController.getUserByPhone);
 module.exports = router;
