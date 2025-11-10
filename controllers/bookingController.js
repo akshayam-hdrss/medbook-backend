@@ -202,12 +202,12 @@ exports.getUserByPhone = async (req, res) => {
     if (rows.length === 0) {
       return res
         .status(404)
-        .json({ message: "Doctor not found for this phone number" });
+        .json({ message: "user not found for this phone number" });
     }
 
     res.status(200).json(rows[0]); // { userId, name, phone, isDoctor }
   } catch (error) {
-    console.error("Error fetching doctor by phone:", error);
+    console.error("Error fetching user by phone:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
