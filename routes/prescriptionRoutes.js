@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 
-router.put("/updateserviceid", updateserviceid);
+router.put("/updateserviceid/:id", updateserviceid);
 
 router.post("/", createPrescription);
 
