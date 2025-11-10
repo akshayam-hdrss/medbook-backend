@@ -38,9 +38,12 @@ const createPrescription = async (req, res) => {
       ]
     );
 
+    const insertedId = result.insertId;
+
     res.status(200).json({
       message: "Prescription created ✅",
       prescriptionId: newPrescriptionId,
+      id: insertedId,
     });
   } catch (err) {
     console.error("Error inserting prescription:", err);
@@ -174,6 +177,30 @@ const getPrescriptionbyid = async (req, res) => {
   }
 };
 
+const updateserviceid = async (req, res) => {
+  const db = global.db;
+  const { id, serviceId } = req.body;
+  try {
+    const [exist] = await db.query(`SELECT id FROM prescription WHERE id = ?`, [
+      id,
+    ]);
+
+    if (!exist.length) {
+      return res.status(404).json({ message: "Prescription not found" });
+    }
+    await db.query(
+      `UPDATE prescription SET
+        serviceId = ?
+      WHERE id = ?`,
+      [serviceId, id]
+    );
+    res.status(200).json({ message: "Prescription serviceId updated ✅" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Update failed" });
+  }
+};
+
 module.exports = {
   createPrescription,
   getPrescriptionsByDoctor,
@@ -181,4 +208,5 @@ module.exports = {
   updatePrescription,
   deletePrescription,
   getPrescriptionbyid,
+  updateserviceid,
 };

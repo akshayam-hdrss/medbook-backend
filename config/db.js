@@ -664,6 +664,11 @@ const connectDB = async () => {
   )
 `);
 
+  //   await db.query(`
+  //   ALTER TABLE prescription
+  //   ADD COLUMN serviceId INT DEFAULT NULL
+  // `);
+
   await db.query(`
   CREATE TABLE IF NOT EXISTS medicalProduct (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -676,7 +681,7 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM bookings");
+  const [rows, fields] = await db.query("SELECT * FROM prescription");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {

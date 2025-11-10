@@ -6,9 +6,12 @@ const {
   updatePrescription,
   deletePrescription,
   getPrescriptionbyid,
+  updateserviceid,
 } = require("../controllers/prescriptionController");
 
 const router = express.Router();
+
+router.put("/updateserviceid", updateserviceid);
 
 router.post("/", createPrescription);
 
