@@ -20,11 +20,10 @@ const createPrescription = async (req, res) => {
 
     const newPrescriptionId = last.length ? last[0].prescriptionId + 1 : 1;
 
-    // ✅ Insert new prescription
-    await db.query(
+    const [result] = await db.query(
       `INSERT INTO prescription 
-      (prescriptionId, DoctorID, patientName, age, date, address, description, prescription, nextVisit) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  (prescriptionId, DoctorID, patientName, age, date, address, description, prescription, nextVisit) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         newPrescriptionId,
         DoctorID,
