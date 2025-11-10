@@ -679,6 +679,15 @@ const connectDB = async () => {
       ON DELETE CASCADE ON UPDATE CASCADE
   )
 `);
+  //add favourites table
+  await db.query(`
+  CREATE TABLE IF NOT EXISTS medicalFavourites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    doctorId INT,
+    serviceId INT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ )
+`);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
   const [rows, fields] = await db.query("SELECT * FROM prescription");

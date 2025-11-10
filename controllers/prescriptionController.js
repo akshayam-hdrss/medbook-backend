@@ -178,7 +178,8 @@ const getPrescriptionbyid = async (req, res) => {
 
 const updateserviceid = async (req, res) => {
   const db = global.db;
-  const { id, serviceId } = req.body;
+  const { id } = req.params;
+  const { serviceId } = req.body;
   try {
     const [exist] = await db.query(`SELECT id FROM prescription WHERE id = ?`, [
       id,
@@ -200,6 +201,23 @@ const updateserviceid = async (req, res) => {
   }
 };
 
+const getPrescriptionbyserviceid = async (req, res) => {
+  const db = global.db;
+  const { id } = req.params;
+  try {
+    const [result] = await db.query(
+      `SELECT * FROM prescription WHERE serviceId = ?`,
+      [id]
+    );
+    if (!result.length)
+      return res.status(404).json({ message: "Prescription not found" });
+    res.status(200).json(result);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed fetching prescription" });
+  }
+};
+
 module.exports = {
   createPrescription,
   getPrescriptionsByDoctor,
@@ -208,4 +226,5 @@ module.exports = {
   deletePrescription,
   getPrescriptionbyid,
   updateserviceid,
+  getPrescriptionbyserviceid,
 };
