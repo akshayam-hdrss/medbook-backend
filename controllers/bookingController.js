@@ -211,3 +211,18 @@ exports.getUserByPhone = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+exports.addPrescription = async (req, res) => {
+  const { id } = req.params;
+  const { prescriptionId } = req.body;
+  try {
+    const [result] = await global.db.query(
+      `UPDATE bookings SET prescriptionId = ? WHERE id = ?`,
+      [prescriptionId, id]
+    );
+    res.status(200).json({ message: "Prescription added to booking" });
+  } catch (error) {
+    console.error("Update error:", error);
+    res.status(500).json({ error: "Failed to add prescription to booking" });
+  }
+};

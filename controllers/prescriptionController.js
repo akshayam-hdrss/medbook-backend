@@ -8,7 +8,7 @@ const createPrescription = async (req, res) => {
     address,
     description,
     prescription,
-    nextVisit
+    nextVisit,
   } = req.body;
 
   try {
@@ -34,13 +34,13 @@ const createPrescription = async (req, res) => {
         address,
         description,
         JSON.stringify(prescription),
-        nextVisit
+        nextVisit,
       ]
     );
 
-    res.status(200).json({ 
-      message: "Prescription created ✅", 
-      prescriptionId: newPrescriptionId 
+    res.status(200).json({
+      message: "Prescription created ✅",
+      prescriptionId: newPrescriptionId,
     });
   } catch (err) {
     console.error("Error inserting prescription:", err);
@@ -90,7 +90,15 @@ const getPrescription = async (req, res) => {
 const updatePrescription = async (req, res) => {
   const db = global.db;
   const { DoctorID, prescriptionId } = req.params;
-  const { patientName, age, date, address, description, prescription, nextVisit } = req.body;
+  const {
+    patientName,
+    age,
+    date,
+    address,
+    description,
+    prescription,
+    nextVisit,
+  } = req.body;
 
   try {
     const [exist] = await db.query(
@@ -108,9 +116,15 @@ const updatePrescription = async (req, res) => {
         prescription = ?, nextVisit = ?
       WHERE DoctorID = ? AND prescriptionId = ?`,
       [
-        patientName, age, date, address, description,
-        JSON.stringify(prescription), nextVisit,
-        DoctorID, prescriptionId
+        patientName,
+        age,
+        date,
+        address,
+        description,
+        JSON.stringify(prescription),
+        nextVisit,
+        DoctorID,
+        prescriptionId,
       ]
     );
 
@@ -143,10 +157,28 @@ const deletePrescription = async (req, res) => {
   }
 };
 
+const getPrescriptionbyid = async (req, res) => {
+  const db = global.db;
+  const { id } = req.params;
+  try {
+    const [result] = await db.query(
+      `SELECT * FROM prescription WHERE id = ? LIMIT 1`,
+      [id]
+    );
+    if (!result.length)
+      return res.status(404).json({ message: "Prescription not found" });
+    res.status(200).json(result[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed fetching prescription" });
+  }
+};
+
 module.exports = {
-    createPrescription,
+  createPrescription,
   getPrescriptionsByDoctor,
   getPrescription,
   updatePrescription,
-  deletePrescription
+  deletePrescription,
+  getPrescriptionbyid,
 };

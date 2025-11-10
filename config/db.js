@@ -1,6 +1,6 @@
-const mysql = require('mysql2/promise');
-const fs = require('fs');
-require('dotenv').config();
+const mysql = require("mysql2/promise");
+const fs = require("fs");
+require("dotenv").config();
 
 const connectDB = async () => {
   const ca = process.env.DB_SSL_CA;
@@ -16,13 +16,9 @@ const connectDB = async () => {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
-      ca: process.env.DB_SSL_CA.replace(/\\n/g, '\n')
-    }
+      ca: process.env.DB_SSL_CA.replace(/\\n/g, "\n"),
+    },
   });
-
-
-
-  
 
   // Create database if it doesn't exist
   await db.query(`CREATE DATABASE IF NOT EXISTS medbookdb`);
@@ -39,7 +35,7 @@ const connectDB = async () => {
   `);
 
   // Create hospital table
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS hospital (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -58,7 +54,6 @@ await db.query(`
   )
 `);
 
-
   await db.query(`
   CREATE TABLE IF NOT EXISTS traditionalType (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,25 +63,23 @@ await db.query(`
   )
 `);
 
-// hospital_info table 
-// await db.query(`CREATE TABLE IF NOT EXISTS hospital_info (
-//     id INT AUTO_INCREMENT PRIMARY KEY,
-//     name VARCHAR(255) NOT NULL,
-//     banner_image_url VARCHAR(500),
-//     journey_text TEXT,
-//     mission_text TEXT,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-// )
-// `);
+  // hospital_info table
+  // await db.query(`CREATE TABLE IF NOT EXISTS hospital_info (
+  //     id INT AUTO_INCREMENT PRIMARY KEY,
+  //     name VARCHAR(255) NOT NULL,
+  //     banner_image_url VARCHAR(500),
+  //     journey_text TEXT,
+  //     mission_text TEXT,
+  //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  // )
+  // `);
 
-// hospital information table
-
-
+  // hospital information table
 
   // await db.query(DROP TABLE IF EXISTS hospitalInformation);
 
-await db.query(`CREATE TABLE IF NOT EXISTS hospitalInformation (
+  await db.query(`CREATE TABLE IF NOT EXISTS hospitalInformation (
     id INT AUTO_INCREMENT PRIMARY KEY,
     hospitalId INT NOT NULL,
     specialties TEXT,
@@ -102,11 +95,11 @@ await db.query(`CREATE TABLE IF NOT EXISTS hospitalInformation (
   );
 `);
 
-// quiz questions 
+  // quiz questions
 
-// await db.query(DROP TABLE IF EXISTS QuizQuestions);
+  // await db.query(DROP TABLE IF EXISTS QuizQuestions);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS QuizQuestions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     question TEXT NOT NULL,
@@ -117,9 +110,9 @@ await db.query(`
   );
 `);
 
-// quiz_userdata  
-// await db.query(DROP TABLE IF EXISTS quiz_stage_user_data);
-await db.query(`
+  // quiz_userdata
+  // await db.query(DROP TABLE IF EXISTS quiz_stage_user_data);
+  await db.query(`
   CREATE TABLE IF NOT EXISTS quiz_stage_user_data (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT,
@@ -132,9 +125,8 @@ await db.query(`
   );
 `);
 
-
-// Create traditional table
-await db.query(`
+  // Create traditional table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS traditional (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -153,8 +145,6 @@ await db.query(`
   )
 `);
 
-
-
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctorType (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -163,8 +153,6 @@ await db.query(`
       imageUrl TEXT
     );
   `);
-
-  
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctor (
@@ -202,9 +190,6 @@ await db.query(`
     );
   `);
 
-  
-
-
   await db.query(`
     CREATE TABLE IF NOT EXISTS doctorReview (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -231,7 +216,6 @@ await db.query(`
     );
   `);
 
-
   await db.query(`
   CREATE TABLE IF NOT EXISTS availableServicetype (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -242,7 +226,7 @@ await db.query(`
 `);
 
   // Create availableService table
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS availableService (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -254,10 +238,8 @@ await db.query(`
   )
 `);
 
-
-
-// Create serviceType table
-await db.query(`
+  // Create serviceType table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS serviceType (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -269,7 +251,7 @@ await db.query(`
   )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS service (
     id INT AUTO_INCREMENT PRIMARY KEY,
     serviceName VARCHAR(255),
@@ -295,10 +277,7 @@ await db.query(`
   )
 `);
 
-
-
-
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS serviceReview (
     id INT AUTO_INCREMENT PRIMARY KEY,
     serviceId INT,
@@ -310,8 +289,8 @@ await db.query(`
   )
 `);
 
-// Create availableProductType table
-await db.query(`
+  // Create availableProductType table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS availableProductType (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -320,8 +299,8 @@ await db.query(`
   )
 `);
 
-// Create availableProduct table
-await db.query(`
+  // Create availableProduct table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS availableProduct (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -330,9 +309,8 @@ await db.query(`
   )
 `);
 
-
-// Create productType table
-await db.query(`
+  // Create productType table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS productType (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -344,7 +322,7 @@ await db.query(`
   )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     productName VARCHAR(255),
@@ -372,7 +350,7 @@ await db.query(`
   )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
@@ -394,11 +372,9 @@ await db.query(`
   )
 `);
 
-// await db.query(`ALTER TABLE users ADD COLUMN isLab BOOLEAN DEFAULT FALSE`);
+  // await db.query(`ALTER TABLE users ADD COLUMN isLab BOOLEAN DEFAULT FALSE`);
 
-
-
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS complaints (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT,
@@ -412,8 +388,8 @@ await db.query(`
   )
 `);
 
-// Create blog table
-await db.query(`
+  // Create blog table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS blog (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -427,7 +403,7 @@ await db.query(`
   )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS gallery (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category VARCHAR(50),
@@ -438,7 +414,7 @@ await db.query(`
   )
 `);
 
-// ✅ Schedule table
+  // ✅ Schedule table
   await db.query(`
     CREATE TABLE IF NOT EXISTS schedule (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -455,6 +431,19 @@ await db.query(`
     )
   `);
 
+  // add column then FK (Option A)
+  // await db.query(
+  //   `ALTER TABLE schedule ADD COLUMN prescriptionID INT DEFAULT NULL;`
+  // );
+
+  // await db.query(`
+  //   ALTER TABLE schedule
+  //     ADD CONSTRAINT fk_schedule_prescription
+  //       FOREIGN KEY (prescriptionID)
+  //       REFERENCES prescription(id)
+  //       ON DELETE SET NULL
+  //       ON UPDATE CASCADE;
+  // `);
 
   await db.query(`
       CREATE TABLE IF NOT EXISTS blogtopics (
@@ -496,8 +485,8 @@ await db.query(`
 )
 `);
 
-//event table
-await db.query(`
+  //event table
+  await db.query(`
   CREATE TABLE IF NOT EXISTS event (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -508,8 +497,8 @@ await db.query(`
   )
 `);
 
-// districtArea table
-await db.query(`CREATE TABLE IF NOT EXISTS district_area (
+  // districtArea table
+  await db.query(`CREATE TABLE IF NOT EXISTS district_area (
   id INT AUTO_INCREMENT PRIMARY KEY,
   order_no INT NOT NULL DEFAULT 1,
   district VARCHAR(100) NOT NULL,
@@ -517,7 +506,7 @@ await db.query(`CREATE TABLE IF NOT EXISTS district_area (
 )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS primecareicon (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -534,7 +523,7 @@ await db.query(`
   )
 `);
 
- // ---- Bookings ----
+  // ---- Bookings ----
   await db.query(`
     CREATE TABLE IF NOT EXISTS bookings (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -557,6 +546,21 @@ await db.query(`
     ) ENGINE=InnoDB
   `);
 
+  // Drop FK if it exists before re-adding
+  //   await db.query(`
+  //   ALTER TABLE schedule
+  //   DROP FOREIGN KEY IF EXISTS fk_schedule_prescription;
+  // `);
+
+  //   await db.query(`
+  //   ALTER TABLE bookings
+  //     ADD CONSTRAINT fk_schedule_prescription
+  //       FOREIGN KEY (prescriptionID)
+  //       REFERENCES prescription(id)
+  //       ON DELETE SET NULL
+  //       ON UPDATE CASCADE;
+  // `);
+
   // ---- Notifications ----
   await db.query(`
     CREATE TABLE IF NOT EXISTS notifications (
@@ -574,9 +578,8 @@ await db.query(`
     ) ENGINE=InnoDB
   `);
 
-
   // ✅ Employees table
-    await db.query(`
+  await db.query(`
       CREATE TABLE IF NOT EXISTS employees (
         employeeNumber VARCHAR(50) PRIMARY KEY,
         userName VARCHAR(100),
@@ -604,9 +607,7 @@ await db.query(`
       )
     `);
 
-
-
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS membership (
     id INT AUTO_INCREMENT PRIMARY KEY,
     addInName VARCHAR(255),
@@ -644,7 +645,7 @@ await db.query(`
   )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS prescription (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prescriptionId INT NOT NULL,
@@ -663,7 +664,7 @@ await db.query(`
   )
 `);
 
-await db.query(`
+  await db.query(`
   CREATE TABLE IF NOT EXISTS medicalProduct (
     id INT AUTO_INCREMENT PRIMARY KEY,
     doctorId INT,
@@ -674,17 +675,16 @@ await db.query(`
   )
 `);
 
-
-//   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-const [rows, fields] = await db.query('SELECT * FROM users');
-console.log("📋 Total number:", rows.length);
-console.log("📋 Columns:");
-fields.forEach(field => {
-  console.log('-', field.name);
-});
+  //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
+  const [rows, fields] = await db.query("SELECT * FROM bookings");
+  console.log("📋 Total number:", rows.length);
+  console.log("📋 Columns:");
+  fields.forEach((field) => {
+    console.log("-", field.name);
+  });
 
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;
-}; 
+};
 
 module.exports = connectDB;
