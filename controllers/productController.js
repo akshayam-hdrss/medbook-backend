@@ -83,6 +83,7 @@ exports.addAvailableProduct = async (req, res) => {
       order_no,
       availableProductTypeId,
       location,
+      contact_name,
       phoneNumber,
       whatsappNumber,
       experience,
@@ -94,14 +95,15 @@ exports.addAvailableProduct = async (req, res) => {
 
     const [result] = await db.query(
       `INSERT INTO availableProduct 
-      (name, imageUrl, order_no, availableProductTypeId, location, phoneNumber, whatsappNumber, experience, addressLine1, addressLine2, district, mapLink)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (name, imageUrl, order_no, availableProductTypeId, location, contact_name, phoneNumber, whatsappNumber, experience, addressLine1, addressLine2, district, mapLink)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         imageUrl,
         order_no || null,
         availableProductTypeId,
         location,
+        contact_name,
         phoneNumber,
         whatsappNumber,
         experience,
@@ -121,6 +123,7 @@ exports.addAvailableProduct = async (req, res) => {
         order_no,
         availableProductTypeId,
         location,
+        contact_name,
         phoneNumber,
         whatsappNumber,
         experience,
@@ -145,6 +148,7 @@ exports.updateAvailableProduct = async (req, res) => {
       order_no,
       availableProductTypeId,
       location,
+      contact_name,
       phoneNumber,
       whatsappNumber,
       experience,
@@ -157,7 +161,7 @@ exports.updateAvailableProduct = async (req, res) => {
     await db.query(
       `UPDATE availableProduct 
       SET name = ?, imageUrl = ?, order_no = ?, availableProductTypeId = ?, 
-          location = ?, phoneNumber = ?, whatsappNumber = ?, experience = ?, 
+          location = ?,contact_name=?, phoneNumber = ?, whatsappNumber = ?, experience = ?, 
           addressLine1 = ?, addressLine2 = ?, district = ?, mapLink = ?
       WHERE id = ?`,
       [
@@ -166,6 +170,7 @@ exports.updateAvailableProduct = async (req, res) => {
         order_no,
         availableProductTypeId,
         location,
+        contact_name,
         phoneNumber,
         whatsappNumber,
         experience,
