@@ -672,14 +672,20 @@ const connectDB = async () => {
   await db.query(`
   CREATE TABLE IF NOT EXISTS medicalProduct (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    doctorId INT,
+    doctorId INT  ,
     productName VARCHAR(255) NOT NULL,
+     price DECIMAL(10,2) DEFAULT 0.00,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (doctorId) REFERENCES users(id)
       ON DELETE CASCADE ON UPDATE CASCADE
   )
 `);
-  //add favourites table
+
+// await db.query(`
+//   ALTER TABLE medicalProduct
+//   ADD COLUMN price DECIMAL(10,2) DEFAULT 0.00
+// `);
+  //add favourites table  
   await db.query(`
   CREATE TABLE IF NOT EXISTS medicalFavourites (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -690,7 +696,7 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM prescription");
+  const [rows, fields] = await db.query("SELECT * FROM medicalProduct");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {

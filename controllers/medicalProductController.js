@@ -1,12 +1,12 @@
 // ADD PRODUCT
 const addMedicalProduct = async (req, res) => {
   const db = global.db;
-  const { doctorId, productName } = req.body;
+  const { doctorId, productName, price, category } = req.body;
 
   try {
     await db.query(
-      `INSERT INTO medicalProduct (doctorId, productName) VALUES (?, ?)`,
-      [doctorId, productName]
+      `INSERT INTO medicalProduct (doctorId, productName, price, category) VALUES (?, ?, ?, ?)`,
+      [doctorId, productName, price || 0.0, category || null]
     );
 
     res.status(200).json({ message: "Product added ✅" });
@@ -23,7 +23,10 @@ const getMedicalProductsByDoctor = async (req, res) => {
 
   try {
     const [results] = await db.query(
-      `SELECT * FROM medicalProduct WHERE doctorId = ? ORDER BY createdAt DESC`,
+      `SELECT id, doctorId, productName, price, category, createdAt 
+       FROM medicalProduct 
+       WHERE doctorId = ? 
+       ORDER BY createdAt DESC`,
       [doctorId]
     );
 
@@ -38,12 +41,14 @@ const getMedicalProductsByDoctor = async (req, res) => {
 const updateMedicalProduct = async (req, res) => {
   const db = global.db;
   const { id } = req.params;
-  const { productName } = req.body;
+  const { productName, price, category } = req.body;
 
   try {
     const [result] = await db.query(
-      `UPDATE medicalProduct SET productName = ? WHERE id = ?`,
-      [productName, id]
+      `UPDATE medicalProduct 
+       SET productName = ?, price = ?, category = ? 
+       WHERE id = ?`,
+      [productName, price || 0.0, category || null, id]
     );
 
     if (result.affectedRows === 0)
@@ -62,9 +67,9 @@ const deleteMedicalProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [result] = await db.query(
-      `DELETE FROM medicalProduct WHERE id = ?`, [id]
-    );
+    const [result] = await db.query(`DELETE FROM medicalProduct WHERE id = ?`, [
+      id,
+    ]);
 
     if (result.affectedRows === 0)
       return res.status(404).json({ message: "Product not found" });
@@ -80,5 +85,5 @@ module.exports = {
   addMedicalProduct,
   getMedicalProductsByDoctor,
   updateMedicalProduct,
-  deleteMedicalProduct
+  deleteMedicalProduct,
 };
