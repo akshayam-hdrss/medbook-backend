@@ -1,15 +1,24 @@
-const cloudinary = require('../config/cloudinary');
+const s3 = require("../config/s3");
 
-exports.uploadImage = (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-  const stream = cloudinary.uploader.upload_stream(
-    { folder: 'uploads' },
-    (error, result) => {
-      if (error) return res.status(500).json({ error: 'Upload failed' });
-      res.json({ message: 'Uploaded', imageUrl: result.secure_url });
-    }
-  );
+    const params = {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: `uploads/${Date.now()}-${req.file.originalname}`,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
 
-  stream.end(req.file.buffer);
+    const result = await s3.upload(params).promise();
+
+    res.json({
+      message: "Uploaded",
+      imageUrl: result.Location, // S3 URL
+    });
+  } catch (error) {
+    console.error("S3 Upload Error:", error);
+    res.status(500).json({ error: "Upload failed" });
+  }
 };
