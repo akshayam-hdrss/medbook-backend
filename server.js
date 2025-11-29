@@ -47,6 +47,7 @@ app.use(express.json());
     const emailRoutes = require("./routes/emailRoutes");
     const prescriptionRoutes = require("./routes/prescriptionRoutes");
     const medicalProductRoutes = require("./routes/medicalProductRoutes");
+    const bookServiceRoutes = require("./routes/bookServiceRoutes");
 
     // Mount routes
     app.get("/", (req, res) => {
@@ -74,6 +75,7 @@ app.use(express.json());
     app.use("/api/email", emailRoutes);
     app.use("/api/prescription", prescriptionRoutes);
     app.use("/api/medical-product", medicalProductRoutes);
+    app.use("/api/service-bookings", bookServiceRoutes);
     app.use("/api", uploadRoutes);
     app.use("/api", hospitalRoutes);
     app.use("/api", traditionalRoutes);
@@ -81,6 +83,7 @@ app.use(express.json());
     app.use("/api", whatsappRoutes);
     app.use("/api", primecareIconRoutes);
     app.use("/api", quiz_question);
+    
 
     // ✅ Wrap app in HTTP server
     const server = http.createServer(app);

@@ -289,6 +289,29 @@ const connectDB = async () => {
   )
 `);
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS service_bookings (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      serviceId INT,
+      serviceName VARCHAR(255),
+      userId INT,
+      username VARCHAR(255),
+      customerName VARCHAR(255),
+      customerAge VARCHAR(50),
+      customerGender VARCHAR(20),
+      contactNumber VARCHAR(20),
+      description TEXT,
+      date DATE,
+      time VARCHAR(50),
+      status VARCHAR(50),
+      remarks TEXT,
+      paymentImageUrl TEXT,
+      isOnline TINYINT DEFAULT 0,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `)
+
+
   // Create availableProductType table
   await db.query(`
   CREATE TABLE IF NOT EXISTS availableProductType (
@@ -368,11 +391,12 @@ const connectDB = async () => {
     isDoctor BOOLEAN DEFAULT FALSE,
     isPharmacy BOOLEAN DEFAULT FALSE,
     isProduct BOOLEAN DEFAULT FALSE,
+    isService BOOLEAN DEFAULT FALSE,
     isLab BOOLEAN DEFAULT FALSE
   )
 `);
 
-  // await db.query(`ALTER TABLE users ADD COLUMN isLab BOOLEAN DEFAULT FALSE`);
+  // await db.query(`ALTER TABLE users ADD COLUMN isService BOOLEAN DEFAULT FALSE`);
 
   await db.query(`
   CREATE TABLE IF NOT EXISTS complaints (
@@ -696,7 +720,7 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM medicalProduct");
+  const [rows, fields] = await db.query("SELECT * FROM service_bookings");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {

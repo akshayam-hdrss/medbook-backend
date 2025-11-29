@@ -202,7 +202,7 @@ router.post('/reset-password', async (req, res) => {
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
     const [rows] = await global.db.query(
-      `SELECT id, name, phone, pincode, dob, isDoctor, isProduct, isPharmacy, isLab, createdAt FROM users WHERE id = ?`,
+      `SELECT id, name, phone, pincode, dob, isDoctor, isProduct, isPharmacy, isLab, isService, createdAt FROM users WHERE id = ?`,
       [req.user.id]
     );
 
@@ -217,14 +217,16 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
 // ====================== UPDATE USER ROLE ======================
 router.put('/role', async (req, res) => {
-  const { id, isDoctor, isPharmacy, isProduct, isLab } = req.body;
+  const { id, isDoctor, isPharmacy, isProduct, isLab, isService } = req.body;
 
   if (!id) {
     return res.status(400).json({ message: 'User ID is required' });
   }
 
-  const roles = [isDoctor, isPharmacy, isProduct , isLab];
+  const roles = [isDoctor, isPharmacy, isProduct , isLab, isService];
+  console.log("roles:",roles);
   const trueCount = roles.filter(r => r === true).length;
+  console.log("trueCount:",trueCount);
 
   if (trueCount !== 1) {
     return res.status(400).json({ message: 'Only one role must be selected as true' });
@@ -232,7 +234,7 @@ router.put('/role', async (req, res) => {
 
   try {
     const query = `UPDATE users 
-      SET isDoctor = ?, isPharmacy = ?, isProduct = ?, isLab = ? 
+      SET isDoctor = ?, isPharmacy = ?, isProduct = ?, isLab = ?, isService = ? 
       WHERE id = ?`;
 
     await global.db.query(query, [
@@ -240,6 +242,7 @@ router.put('/role', async (req, res) => {
       isPharmacy ? true : false,
       isProduct ? true : false,
       isLab ? true : false,
+      isService ? true : false,
       id
     ]);
 
