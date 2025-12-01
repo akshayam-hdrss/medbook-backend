@@ -91,9 +91,12 @@ const connectDB = async () => {
     banner_img VARCHAR(255),
     ceo_name VARCHAR(255),
     ceo_image VARCHAR(255),
-    nearest_location VARCHAR(255)
+    nearest_location VARCHAR(255),
+    youtubeLink VARCHAR(255)
   );
 `);
+
+// await db.query(`ALTER TABLE hospitalInformation ADD youtubeLink VARCHAR(255)`);
 
   // quiz questions
 
@@ -720,7 +723,7 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM service_bookings");
+  const [rows, fields] = await db.query("SELECT * FROM hospitalInformation");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {

@@ -158,12 +158,13 @@ exports.createHospitalInformation = async (req, res) => {
       ceo_name,
       ceo_image,
       nearest_location,
+      youtubeLink
     } = req.body;
 
 const [result] = await db.query(
   `INSERT INTO hospitalInformation 
-    (hospitalId, specialties, website, address, mission, vision, description, banner_img, ceo_name, ceo_image, nearest_location)
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (hospitalId, specialties, website, address, mission, vision, description, banner_img, ceo_name, ceo_image, nearest_location, youtubeLink)
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   [
     hospitalId,
     specialties,
@@ -176,6 +177,7 @@ const [result] = await db.query(
     ceo_name,
     ceo_image,
     nearest_location,
+    youtubeLink
   ]
 );
 
@@ -229,11 +231,12 @@ exports.updateHospitalInformation = async (req, res) => {
       ceo_name,
       ceo_image,
       nearest_location,
+      youtubeLink
     } = req.body;
 
     const [result] = await db.query(
       `UPDATE hospitalInformation 
-       SET specialties=?, website=?, address=?, mission=?,vision=?, description=?, banner_img=?, ceo_name=?, ceo_image=?, nearest_location=?
+       SET specialties=?, website=?, address=?, mission=?,vision=?, description=?, banner_img=?, ceo_name=?, ceo_image=?, nearest_location=?, youtubeLink=?
        WHERE hospitalId=?`,
       [
         specialties,
@@ -246,6 +249,7 @@ exports.updateHospitalInformation = async (req, res) => {
         ceo_name,
         ceo_image,
         nearest_location,
+        youtubeLink,
         hospitalId,
       ]
     );
