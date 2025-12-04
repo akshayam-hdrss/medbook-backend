@@ -722,8 +722,27 @@ const connectDB = async () => {
  )
 `);
 
+
+
+//app favourties
+await db.query(`
+  CREATE TABLE IF NOT EXISTS favorites (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userId INT NOT NULL,
+    doctorId INT,
+    serviceId INT,
+    productId INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT fk_user
+      FOREIGN KEY (userId) REFERENCES users(id)
+      ON DELETE CASCADE
+  )
+`);
+
+
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM hospitalInformation");
+  const [rows, fields] = await db.query("SELECT * FROM favorites");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {
