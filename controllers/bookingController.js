@@ -18,6 +18,12 @@ exports.createBooking = async (req, res) => {
       remarks,
       paymentImageUrl,
       isOnline,
+
+      // NEW FIELDS
+      bloodPressure,
+      height,
+      weight,
+      sugar,
     } = req.body;
 
     if (!doctorId || !userId || !patientName || !date || !time) {
@@ -26,8 +32,11 @@ exports.createBooking = async (req, res) => {
 
     const [result] = await global.db.query(
       `INSERT INTO bookings 
-        (doctorId, doctorName, userId, username, patientName, patientAge, contactNumber, description, date, time, status, remarks, paymentImageUrl, isOnline) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (doctorId, doctorName, userId, username, patientName, patientAge, contactNumber,
+         description, date, time, status, remarks, paymentImageUrl, isOnline,
+         bloodPressure, height, weight, sugar)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
       [
         doctorId,
         doctorName || null,
@@ -43,12 +52,18 @@ exports.createBooking = async (req, res) => {
         remarks || null,
         paymentImageUrl || null,
         isOnline || 0,
+
+        // NEW FIELDS
+        bloodPressure || null,
+        height || null,
+        weight || null,
+        sugar || null,
       ]
     );
 
     const newBookingId = result.insertId;
 
-    // ✅ Send notification to Doctor only
+    // Notify doctor
     const io = getIO();
     io.to(`doctor_${doctorId}`).emit("bookingNotification", {
       type: "BookingCreated",
@@ -73,29 +88,52 @@ exports.createBooking = async (req, res) => {
 exports.updateBooking = async (req, res) => {
   try {
     const { bookingId } = req.params;
-    const { status, remarks, date, time, userId, doctorId, editedBy } =
-      req.body;
 
-    if (!status && !remarks && !date && !time) {
-      return res.status(400).json({ message: "At least one field required" });
-    }
+    const {
+      status,
+      remarks,
+      date,
+      time,
+      userId,
+      doctorId,
+      editedBy,
+
+      // NEW FIELDS
+      bloodPressure,
+      height,
+      weight,
+      sugar,
+    } = req.body;
 
     const [result] = await global.db.query(
-      `UPDATE bookings 
-       SET 
-         status = COALESCE(?, status), 
+      `UPDATE bookings SET
+         status = COALESCE(?, status),
          remarks = COALESCE(?, remarks),
          date = COALESCE(?, date),
-         time = COALESCE(?, time)
+         time = COALESCE(?, time),
+         bloodPressure = COALESCE(?, bloodPressure),
+         height = COALESCE(?, height),
+         weight = COALESCE(?, weight),
+         sugar = COALESCE(?, sugar)
        WHERE id = ?`,
-      [status, remarks, date, time, bookingId]
+      [
+        status,
+        remarks,
+        date,
+        time,
+        bloodPressure,
+        height,
+        weight,
+        sugar,
+        bookingId,
+      ]
     );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    // ✅ Notifications based on who edited
+    // Notifications
     const io = getIO();
     if (editedBy === "user" && doctorId) {
       io.to(`doctor_${doctorId}`).emit("bookingNotification", {
@@ -160,6 +198,7 @@ exports.getBookingsByDoctor = async (req, res) => {
   }
 };
 
+// ✅ Get doctor by phone
 exports.getDoctorByPhone = async (req, res) => {
   try {
     const { phone } = req.params;
@@ -179,13 +218,14 @@ exports.getDoctorByPhone = async (req, res) => {
         .json({ message: "Doctor not found for this phone number" });
     }
 
-    res.status(200).json(rows[0]); // { userId, name, phone, isDoctor }
+    res.status(200).json(rows[0]);
   } catch (error) {
     console.error("Error fetching doctor by phone:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+// ✅ Get user by phone
 exports.getUserByPhone = async (req, res) => {
   try {
     const { phone } = req.params;
@@ -202,21 +242,22 @@ exports.getUserByPhone = async (req, res) => {
     if (rows.length === 0) {
       return res
         .status(404)
-        .json({ message: "user not found for this phone number" });
+        .json({ message: "User not found for this phone number" });
     }
 
-    res.status(200).json(rows[0]); // { userId, name, phone, isDoctor }
+    res.status(200).json(rows[0]);
   } catch (error) {
     console.error("Error fetching user by phone:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
+// ✅ Add prescription to booking
 exports.addPrescription = async (req, res) => {
   const { id } = req.params;
   const { prescriptionId } = req.body;
   try {
-    const [result] = await global.db.query(
+    await global.db.query(
       `UPDATE bookings SET prescriptionId = ? WHERE id = ?`,
       [prescriptionId, id]
     );

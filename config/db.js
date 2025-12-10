@@ -96,7 +96,7 @@ const connectDB = async () => {
   );
 `);
 
-// await db.query(`ALTER TABLE hospitalInformation ADD youtubeLink VARCHAR(255)`);
+  // await db.query(`ALTER TABLE hospitalInformation ADD youtubeLink VARCHAR(255)`);
 
   // quiz questions
 
@@ -312,8 +312,7 @@ const connectDB = async () => {
       isOnline TINYINT DEFAULT 0,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-  `)
-
+  `);
 
   // Create availableProductType table
   await db.query(`
@@ -564,6 +563,10 @@ const connectDB = async () => {
       description TEXT,
       date DATE,
       time TIME,
+      bloodPressure VARCHAR(50),
+      height VARCHAR(20),
+      weight VARCHAR(20),
+      sugar VARCHAR(50),
       status ENUM('Pending','Confirmed','Rescheduled','Cancelled') DEFAULT 'Pending',
       remarks TEXT,
       paymentImageUrl TEXT,
@@ -572,6 +575,7 @@ const connectDB = async () => {
       FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB
   `);
+
 
   // Drop FK if it exists before re-adding
   //   await db.query(`
@@ -708,11 +712,11 @@ const connectDB = async () => {
   )
 `);
 
-// await db.query(`
-//   ALTER TABLE medicalProduct
-//   ADD COLUMN price DECIMAL(10,2) DEFAULT 0.00
-// `);
-  //add favourites table  
+  // await db.query(`
+  //   ALTER TABLE medicalProduct
+  //   ADD COLUMN price DECIMAL(10,2) DEFAULT 0.00
+  // `);
+  //add favourites table
   await db.query(`
   CREATE TABLE IF NOT EXISTS medicalFavourites (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -722,10 +726,8 @@ const connectDB = async () => {
  )
 `);
 
-
-
-//app favourties
-await db.query(`
+  //app favourties
+  await db.query(`
   CREATE TABLE IF NOT EXISTS favorites (
     id INT AUTO_INCREMENT PRIMARY KEY,
     userId INT NOT NULL,
@@ -740,9 +742,8 @@ await db.query(`
   )
 `);
 
-
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM favorites");
+  const [rows, fields] = await db.query("SELECT * FROM bookings");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {
