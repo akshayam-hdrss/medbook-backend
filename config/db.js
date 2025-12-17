@@ -314,6 +314,26 @@ const connectDB = async () => {
     );
   `);
 
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS service_billing (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      bookingId INT,
+      serviceId INT,
+      userId INT,
+      subTotal DECIMAL(10,2),
+      tax DECIMAL(10,2),
+      total DECIMAL(10,2),
+      items JSON,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (bookingId) REFERENCES service_bookings(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (serviceId) REFERENCES service(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY (userId) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+    );
+  `);
+
   // Create availableProductType table
   await db.query(`
   CREATE TABLE IF NOT EXISTS availableProductType (
@@ -743,7 +763,7 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM bookings");
+  const [rows, fields] = await db.query("SELECT * FROM service_billing");
   console.log("📋 Total number:", rows.length);
   console.log("📋 Columns:");
   fields.forEach((field) => {
