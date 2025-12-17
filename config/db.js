@@ -763,12 +763,20 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  const [rows, fields] = await db.query("SELECT * FROM service_billing");
-  console.log("📋 Total number:", rows.length);
-  console.log("📋 Columns:");
-  fields.forEach((field) => {
-    console.log("-", field.name);
-  });
+  // const [rows, fields] = await db.query("SELECT * FROM service_billing");
+  // console.log("📋 Total number:", rows.length);
+  // console.log("📋 Columns:");
+  // fields.forEach((field) => {
+  //   console.log("-", field.name);
+  // });
+
+  // data
+  // const [rows, fields] = await db.query("SELECT * FROM users where isService = 1");
+  // console.log(rows);
+
+
+
+  
 
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;

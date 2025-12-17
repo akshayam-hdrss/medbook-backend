@@ -223,10 +223,10 @@ router.put('/role', async (req, res) => {
     return res.status(400).json({ message: 'User ID is required' });
   }
 
-  const roles = [isDoctor, isPharmacy, isProduct , isLab, isService];
-  console.log("roles:",roles);
+  const roles = [isDoctor, isPharmacy, isProduct, isLab, isService];
+  console.log("roles:", roles);
   const trueCount = roles.filter(r => r === true).length;
-  console.log("trueCount:",trueCount);
+  console.log("trueCount:", trueCount);
 
   if (trueCount !== 1) {
     return res.status(400).json({ message: 'Only one role must be selected as true' });
@@ -341,6 +341,27 @@ router.get('/getshop', async (req, res) => {
   }
 });
 
+//get service info by phonenumber
+router.get('/getservice', async (req, res) => {
+  const { phone } = req.query;
+  if (!phone) {
+    return res.status(400).json({ message: 'Phone number is required' });
+  }
+  try {
+    const [rows] = await global.db.query(
+      "SELECT * FROM service WHERE phone = ?",
+      [phone]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No Service found for this phone number' });
+    }
+    res.json({ services: rows });
+  } catch (err) {
+    console.error('❌ Error fetching services:', err);
+    res.status(500).json({ message: 'Error fetching services' });
+  }
+});
 
 // ====================== JWT Middleware ======================
 function authenticateToken(req, res, next) {
