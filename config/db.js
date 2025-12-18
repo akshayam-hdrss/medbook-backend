@@ -310,9 +310,20 @@ const connectDB = async () => {
       remarks TEXT,
       paymentImageUrl TEXT,
       isOnline TINYINT DEFAULT 0,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      billingId INT DEFAULT NULL,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (billingId) REFERENCES service_billing(id)
+        ON DELETE SET NULL ON UPDATE CASCADE
     );
   `);
+
+  // add BillingId in service_bookings table
+  // await db.query(`
+  //   ALTER TABLE service_bookings
+  //   ADD COLUMN billingId INT DEFAULT NULL,
+  //   ADD FOREIGN KEY (billingId) REFERENCES service_billing(id)
+  //     ON DELETE SET NULL ON UPDATE CASCADE;
+  // `); 
 
   await db.query(`
     CREATE TABLE IF NOT EXISTS service_billing (
@@ -763,12 +774,12 @@ const connectDB = async () => {
 `);
 
   //   await db.query(`ALTER TABLE hospital ADD COLUMN order_no INT DEFAULT NULL`);
-  // const [rows, fields] = await db.query("SELECT * FROM service_billing");
-  // console.log("📋 Total number:", rows.length);
-  // console.log("📋 Columns:");
-  // fields.forEach((field) => {
-  //   console.log("-", field.name);
-  // });
+  const [rows, fields] = await db.query("SELECT * FROM service_bookings");
+  console.log("📋 Total number:", rows.length);
+  console.log("📋 Columns:");
+  fields.forEach((field) => {
+    console.log("-", field.name);
+  });
 
   // data
   // const [rows, fields] = await db.query("SELECT * FROM users where isService = 1");
@@ -776,7 +787,7 @@ const connectDB = async () => {
 
 
 
-  
+
 
   console.log("✅ MySQL Connected & Tables Ensured");
   return db;

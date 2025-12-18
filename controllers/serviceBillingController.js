@@ -7,21 +7,18 @@ exports.createBill = async (req, res) => {
       serviceId,
       userId,
       items,
-      tax
+      tax,
+      subTotal,
+      total
     } = req.body;
 
-    if (!bookingId || !serviceId || !userId || !items) {
+    if (!bookingId || !serviceId || !userId || !tax || !subTotal || !total || !items) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Calculate subtotal
-    let subTotal = 0;
-    items.forEach(item => {
-      subTotal += item.price * item.quantity;
-    });
 
     const taxAmount = tax || 0;
-    const total = subTotal + taxAmount;
+    // const total = subTotal + taxAmount;
 
     const sql = `
       INSERT INTO service_billing
@@ -29,7 +26,7 @@ exports.createBill = async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    await db.query(sql, [
+    const [result] = await db.query(sql, [
       bookingId,
       serviceId,
       userId,
@@ -39,8 +36,21 @@ exports.createBill = async (req, res) => {
       JSON.stringify(items)
     ]);
 
+    let message = "Bill created successfully";
+
+    if (bookingId) {
+      const updateBookingSql = `
+        UPDATE service_bookings
+        SET billingId = ?
+        WHERE id = ?
+      `;
+      const updateBookingResult = await db.query(updateBookingSql, [result.insertId, bookingId]);
+      message = "Billing updated successfully";
+    }
+
     res.status(201).json({
-      message: "Bill created successfully",
+      result: "Success",
+      message,
       subTotal,
       tax: taxAmount,
       total
@@ -48,7 +58,7 @@ exports.createBill = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ result: "Failed", message: "Server error" });
   }
 };
 
