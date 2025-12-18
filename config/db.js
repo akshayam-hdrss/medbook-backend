@@ -334,6 +334,8 @@ const connectDB = async () => {
       subTotal DECIMAL(10,2),
       tax DECIMAL(10,2),
       total DECIMAL(10,2),
+      customerName VARCHAR(255),
+      contactNumber VARCHAR(20),
       items JSON,
       createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (bookingId) REFERENCES service_bookings(id)
@@ -344,6 +346,13 @@ const connectDB = async () => {
         ON DELETE CASCADE ON UPDATE CASCADE
     );
   `);
+
+  // add customerName and contactNumber in service_billing table
+  // await db.query(`
+  //   ALTER TABLE service_billing
+  //   ADD COLUMN customerName VARCHAR(255),
+  //   ADD COLUMN contactNumber VARCHAR(20);
+  // `);
 
   // Create availableProductType table
   await db.query(`

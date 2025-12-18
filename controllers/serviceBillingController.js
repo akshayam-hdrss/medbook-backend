@@ -9,10 +9,12 @@ exports.createBill = async (req, res) => {
       items,
       tax,
       subTotal,
-      total
+      total,
+      customerName,
+      contactNumber
     } = req.body;
 
-    if (!bookingId || !serviceId || !userId || !tax || !subTotal || !total || !items) {
+    if (!bookingId || !serviceId || !userId || !tax || !subTotal || !total || !items || !customerName || !contactNumber) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -22,8 +24,8 @@ exports.createBill = async (req, res) => {
 
     const sql = `
       INSERT INTO service_billing
-      (bookingId, serviceId, userId, subTotal, tax, total, items)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (bookingId, serviceId, userId, subTotal, tax, total, items, customerName, contactNumber)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await db.query(sql, [
@@ -33,7 +35,9 @@ exports.createBill = async (req, res) => {
       subTotal,
       taxAmount,
       total,
-      JSON.stringify(items)
+      JSON.stringify(items),
+      customerName,
+      contactNumber
     ]);
 
     let message = "Bill created successfully";
@@ -53,7 +57,9 @@ exports.createBill = async (req, res) => {
       message,
       subTotal,
       tax: taxAmount,
-      total
+      total,
+      customerName,
+      contactNumber
     });
 
   } catch (error) {
