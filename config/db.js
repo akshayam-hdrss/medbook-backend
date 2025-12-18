@@ -354,6 +354,14 @@ const connectDB = async () => {
   //   ADD COLUMN contactNumber VARCHAR(20);
   // `);
 
+  // add date and time in service_billing table
+  // await db.query(`
+  //   ALTER TABLE service_billing
+  //   ADD COLUMN date DATE,
+  //   ADD COLUMN time VARCHAR(50);
+  // `);
+
+
   // Create availableProductType table
   await db.query(`
   CREATE TABLE IF NOT EXISTS availableProductType (

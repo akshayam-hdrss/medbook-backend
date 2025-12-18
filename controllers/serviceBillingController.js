@@ -1,5 +1,7 @@
 const db = global.db;
 
+// add date and time in service_billing table automatically  not by user and body
+
 exports.createBill = async (req, res) => {
   try {
     const {
@@ -14,9 +16,12 @@ exports.createBill = async (req, res) => {
       contactNumber
     } = req.body;
 
-    if (!bookingId || !serviceId || !userId || !tax || !subTotal || !total || !items || !customerName || !contactNumber) {
+    if (!bookingId || !serviceId || !userId || !subTotal || !total || !items || !customerName || !contactNumber) {
       return res.status(400).json({ message: "Missing required fields" });
     }
+
+    const date = new Date();
+    const time = date.toTimeString();
 
 
     const taxAmount = tax || 0;
@@ -24,8 +29,8 @@ exports.createBill = async (req, res) => {
 
     const sql = `
       INSERT INTO service_billing
-      (bookingId, serviceId, userId, subTotal, tax, total, items, customerName, contactNumber)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (bookingId, serviceId, userId, subTotal, tax, total, items, customerName, contactNumber , date, time)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const [result] = await db.query(sql, [
@@ -37,7 +42,9 @@ exports.createBill = async (req, res) => {
       total,
       JSON.stringify(items),
       customerName,
-      contactNumber
+      contactNumber,
+      date,
+      time
     ]);
 
     let message = "Bill created successfully";
@@ -59,7 +66,9 @@ exports.createBill = async (req, res) => {
       tax: taxAmount,
       total,
       customerName,
-      contactNumber
+      contactNumber,
+      date,
+      time
     });
 
   } catch (error) {
