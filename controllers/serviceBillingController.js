@@ -16,7 +16,7 @@ exports.createBill = async (req, res) => {
       contactNumber
     } = req.body;
 
-    if (!bookingId || !serviceId || !userId || !subTotal || !total || !items || !customerName || !contactNumber) {
+    if (!serviceId || !subTotal || !total || !items || !customerName || !contactNumber) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
