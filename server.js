@@ -50,11 +50,13 @@ app.use(express.json());
     const medicalProductRoutes = require("./routes/medicalProductRoutes");
     const bookServiceRoutes = require("./routes/bookServiceRoutes");
     const serviceBillingRoutes = require("./routes/serviceBillingRoutes");
+    const downloadFiles = require("./routes/downloadFiles");
 
     // Mount routes
     app.get("/", (req, res) => {
       res.send("✅ API is live and running...");
     });
+    app.use("/api/download", downloadFiles);
     app.use("/api/service-bookings", bookServiceRoutes);
     app.use("/api/service-billing", serviceBillingRoutes);
     app.use("/api/services", serviceRoutes);
